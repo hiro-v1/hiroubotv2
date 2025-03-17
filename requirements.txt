@@ -29,7 +29,7 @@ pymongo
 yt-dlp==2023.03.04
 wget
 python-dateutil
-youtubesearchpython==1.6.7
+youtubesearchpython==1.6.6
 emoji
 heroku3
 uvloop
