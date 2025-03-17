@@ -1,23 +1,24 @@
 import uvloop
+
+uvloop.install()
+
 import logging
 import os
 import re
 
 from pyrogram import Client, filters
-from pyrogram.enums import ChatType
-from pyrogram.errors import RPCError
+from pyrogram.enums import *
+from pyrogram.errors import *
+from pyrogram.enums import ParseMode 
 from pyrogram.handlers import CallbackQueryHandler, MessageHandler
 from pyrogram.types import Message
+from pyromod import listen
 from pytgcalls import GroupCallFactory
-from pytgcalls.types import Update as PyTgCallsUpdate
-from pytgcalls.types import GroupCallParticipant
+from pytgcalls.group_call_type import GroupCallType
+from pytgcalls.mtproto_client_type import MTProtoClientType
 from DanteUserbot.config import *
 from aiohttp import ClientSession
 
-# Mempercepat event loop dengan uvloop
-uvloop.install()
-
-# Logger untuk menangani error dan logging bot
 class ConnectionHandler(logging.Handler):
     def emit(self, record):
         for X in ["OSError", "TimeoutError"]:
@@ -39,20 +40,17 @@ logging.getLogger("pytgcalls").setLevel(logging.WARNING)
 
 
 class Bot(Client):
-    """Kelas utama untuk mengelola bot"""
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs, device_model="hiro UBot")
 
     def on_message(self, filters=None, group=-1):
-        """Dekorator untuk menangani pesan masuk"""
         def decorator(func):
             self.add_handler(MessageHandler(func, filters), group)
             return func
+
         return decorator
 
     def get_text(self, m):
-        """Mengambil teks dari pesan"""
         if m.reply_to_message:
             if len(m.command) < 2:
                 text = m.reply_to_message.text or m.reply_to_message.caption
@@ -70,19 +68,18 @@ class Bot(Client):
         return text
         
     def on_callback_query(self, filters=None, group=-1):
-        """Dekorator untuk menangani tombol inline callback"""
         def decorator(func):
             self.add_handler(CallbackQueryHandler(func, filters), group)
             return func
+
         return decorator
 
     async def start(self):
-        """Memulai bot dengan aman"""
         await super().start()
 
-class Ubot(Client):
-    """Kelas utama untuk userbot (Ubot) dengan dukungan panggilan suara/video"""
 
+class Ubot(Client):
+    __module__ = "pyrogram.client"
     _ubot = []
     _prefix = {}
     _get_my_id = []
@@ -91,38 +88,39 @@ class Ubot(Client):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs, device_model="Dante UBot")
-        self.call_py = GroupCallFactory(self).get_group_call()  # Perbaikan di sini
+        self.group_call_factory = GroupCallFactory(self, MTProtoClientType.PYROGRAM)
+        self.call_py = self.group_call_factory.get(GroupCallType.RAW)  # Initialize call_py here
         self.device_model = "Dante UBot"
         
     def on_message(self, filters=None, group=-1):
-        """Dekorator untuk menangani pesan masuk"""
         def decorator(func):
             for ub in self._ubot:
                 ub.add_handler(MessageHandler(func, filters), group)
             return func
+
         return decorator
 
     def pytgcalls_decorator(self):
-        """Dekorator untuk menangani event PyTgCalls"""
         def decorator(func):
             for ub in self._ubot:
                 if func.__name__ == "kicked_handler":
                     ub.call_py.on_update(
-                        PyTgCallsUpdate(
+                        GroupCallParticipant(
                             GroupCallParticipant.Status.KICKED | GroupCallParticipant.Status.LEFT_GROUP,
                         )
                     )(func)
                 elif func.__name__ == "stream_end_handler":
-                    ub.call_py.on_update(PyTgCallsUpdate.stream_end)(func)
+                    ub.call_py.on_update(GroupCallParticipant.stream_end)(func)
                 elif func.__name__ == "participant_handler":
                     ub.call_py.on_update(
-                        PyTgCallsUpdate(
+                        GroupCallParticipant(
                             GroupCallParticipant.Action.JOINED,
                         )
                     )(func)
                 else:
                     ub.call_py.on_update()(func)
             return func
+
         return decorator
 
     async def get_chats_dialog(self, q):
@@ -180,15 +178,12 @@ class Ubot(Client):
         return text 
         
     def set_prefix(self, user_id, prefix):
-        """Mengatur prefix khusus untuk user tertentu."""
         self._prefix[user_id] = prefix
-
+    
     async def get_prefix(self, user_id):
-        """Mengambil prefix user, default ke `.` jika tidak diatur."""
         return self._prefix.get(user_id, ["."])
 
     def cmd_prefix(self, cmd):
-        """Filter untuk menangani command dengan prefix yang fleksibel."""
         command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
         async def func(_, client, message):
@@ -204,7 +199,7 @@ class Ubot(Client):
                     if not text.startswith(prefix):
                         continue
 
-                    without_prefix = text[len(prefix):]  # Hilangkan prefix dari teks
+                    without_prefix = text[len(prefix) :]
 
                     for command in cmd.split("|"):
                         if not re.match(
@@ -226,52 +221,33 @@ class Ubot(Client):
                             for m in command_re.finditer(without_command)
                         ]
 
-                        return True  # Jika ditemukan command yang cocok, kembalikan True
+                        return True
 
-                return False  # Jika tidak ada command yang cocok
+                return False
 
         return filters.create(func)
 
     async def start(self):
-        """Menjalankan userbot dengan inisialisasi yang benar."""
         await super().start()
-        
-        try:
-            await self.call_py.start()
-        except Exception as e:
-            print(f"[ERROR] Gagal memulai PyTgCalls: {e}")
-
-        # Mengambil prefix yang tersimpan di database, default ke "."
+        await self.call_py.start()  # Ensure call_py is started here
         handler = await get_pref(self.me.id)
-        self._prefix[self.me.id] = handler if handler else ["."]
-
-        # Menambahkan instance ke daftar userbot
+        if handler:
+            self._prefix[self.me.id] = handler
+        else:
+            self._prefix[self.me.id] = ["."]
         self._ubot.append(self)
         self._get_my_id.append(self.me.id)
         self._translate[self.me.id] = "id"
+        print(f"[𝐈𝐍𝐅𝐎] - ({self.me.id}) - 𝐒𝐓𝐀𝐑𝐓𝐄𝐃")
 
-        print(f"[✅ INFO] - ({self.me.id}) - BERHASIL DIMULAI")
+bot = Bot(
+    name="bot",
+    bot_token=BOT_TOKEN,
+    api_id=API_ID,
+    api_hash=API_HASH,
+)
 
-
-# Inisialisasi bot utama
-try:
-    bot = Bot(
-        name="bot",
-        bot_token=BOT_TOKEN,
-        api_id=API_ID,
-        api_hash=API_HASH,
-    )
-    print("[✅ INFO] Bot berhasil diinisialisasi.")
-except Exception as e:
-    print(f"[❌ ERROR] Gagal menginisialisasi bot: {e}")
-
-# Inisialisasi userbot utama
-try:
-    ubot = Ubot(name="ubot")
-    print("[✅ INFO] Userbot berhasil diinisialisasi.")
-except Exception as e:
-    print(f"[❌ ERROR] Gagal menginisialisasi userbot: {e}")
-
+ubot = Ubot(name="ubot")
 
 from DanteUserbot.core.database import *
 from DanteUserbot.core.function import *
