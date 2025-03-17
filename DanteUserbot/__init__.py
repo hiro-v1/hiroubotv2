@@ -13,8 +13,9 @@ from pyrogram.enums import ParseMode
 from pyrogram.handlers import CallbackQueryHandler, MessageHandler
 from pyrogram.types import Message
 from pyromod import listen
-from pytgcalls import filters as fl
 from pytgcalls import PyTgCalls
+from pytgcalls.types import Update as PyTgCallsUpdate
+from pytgcalls.types import GroupCallParticipant
 from DanteUserbot.config import *
 from aiohttp import ClientSession
 
@@ -103,15 +104,17 @@ class Ubot(Client):
             for ub in self._ubot:
                 if func.__name__ == "kicked_handler":
                     ub.call_py.on_update(
-                        fl.chat_update(
-                            ChatUpdate.Status.KICKED | ChatUpdate.Status.LEFT_GROUP,
+                        PyTgCallsUpdate(
+                            GroupCallParticipant.Status.KICKED | GroupCallParticipant.Status.LEFT_GROUP,
                         )
                     )(func)
                 elif func.__name__ == "stream_end_handler":
-                    ub.call_py.on_update(fl.stream_end)(func)
+                    ub.call_py.on_update(PyTgCallsUpdate.stream_end)(func)
                 elif func.__name__ == "participant_handler":
                     ub.call_py.on_update(
-                        fl.call_participant(GroupCallParticipant.Action.JOINED),
+                        PyTgCallsUpdate(
+                            GroupCallParticipant.Action.JOINED,
+                        )
                     )(func)
                 else:
                     ub.call_py.on_update()(func)
