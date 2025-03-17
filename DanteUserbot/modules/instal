@@ -1,0 +1,62 @@
+import os
+import importlib
+import sys
+from DanteUserbot import *
+from pyrogram import filters
+from pyrogram.types import Message
+
+MODUL_DIR = "DanteUserbot/modules/"  # Direktori penyimpanan modul
+
+@DANTE.UBOT("install")
+async def install_module(client, message: Message):
+    if message.from_user.id != OWNER_ID:
+        return await message.reply("🚫 **Hanya Owner yang dapat menginstall modul!**")
+
+    if not message.reply_to_message or not message.reply_to_message.document:
+        return await message.reply("❌ **Balas file `.py` untuk menginstall modul!**")
+
+    doc = message.reply_to_message.document
+    if not doc.file_name.endswith(".py"):
+        return await message.reply("❌ **File harus memiliki ekstensi `.py`!**")
+
+    file_path = os.path.join(MODUL_DIR, doc.file_name)
+
+    # Unduh file ke dalam folder module
+    await message.reply_to_message.download(file_path)
+
+    # Coba muat modul
+    module_name = doc.file_name[:-3]  # Hapus `.py` untuk nama modul
+    try:
+        if module_name in sys.modules:
+            importlib.reload(sys.modules[module_name])  # Reload jika sudah ada
+        else:
+            importlib.import_module(f"DanteUserbot.modules.{module_name}")  # Import baru
+
+        await message.reply(f"✅ **Modul `{module_name}` berhasil diinstall dan dimuat!**")
+    except Exception as e:
+        os.remove(file_path)  # Hapus file jika terjadi error
+        await message.reply(f"❌ **Gagal memuat modul `{module_name}`!**\n**Error:** `{e}`")
+
+
+@DANTE.UBOT("uninstall")
+async def uninstall_module(client, message: Message):
+    if message.from_user.id != OWNER_ID:
+        return await message.reply("🚫 **Hanya Owner yang dapat menghapus modul!**")
+
+    if len(message.command) < 2:
+        return await message.reply("❌ **Gunakan:** `/uninstall namamodul`")
+
+    module_name = message.command[1]
+    file_path = os.path.join(MODUL_DIR, f"{module_name}.py")
+
+    if not os.path.exists(file_path):
+        return await message.reply(f"❌ **Modul `{module_name}` tidak ditemukan!**")
+
+    try:
+        os.remove(file_path)  # Hapus file modul
+        if module_name in sys.modules:
+            del sys.modules[module_name]  # Hapus dari cache Python
+
+        await message.reply(f"✅ **Modul `{module_name}` berhasil dihapus!**")
+    except Exception as e:
+        await message.reply(f"❌ **Gagal menghapus modul `{module_name}`!**\n**Error:** `{e}`")
