@@ -18,3 +18,9 @@ async def rem_expired_date(user_id):
     await userEXP.update_one(
         {"_id": user_id}, {"$unset": {"expire_date": ""}}, upsert=True
     )
+
+def get_chat(chat_id):
+    # Define the function to get chat details from the database
+    # Example implementation:
+    # return database.get_chat(chat_id)
+    pass
