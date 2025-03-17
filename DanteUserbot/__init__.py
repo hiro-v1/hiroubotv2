@@ -17,7 +17,10 @@ from pytgcalls import GroupCallFactory
 from pytgcalls.group_call_type import GroupCallType
 from pytgcalls.mtproto_client_type import MTProtoClientType
 from DanteUserbot.config import *
-from aiohttp import ClientSession
+try:
+    from aiohttp import ClientSession
+except ImportError:
+    print("aiohttp module is not installed. Please install it using 'pip install aiohttp'")
 
 class ConnectionHandler(logging.Handler):
     def emit(self, record):
