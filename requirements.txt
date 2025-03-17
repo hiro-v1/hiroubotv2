@@ -10,8 +10,8 @@ pyrogram==2.0.106
 Pillow==9.5.0
 pymediainfo
 opencv-python-headless 
-py-tgcalls==2.1.0
-requests==2.31.0
+py-tgcalls==2.0.6
+requests
 unidecode
 pytimeparse
 attrify
@@ -19,11 +19,11 @@ pySmartDL
 html2text
 removebg
 aiofiles
-aiohttp==3.9.1
+aiohttp
 gpytranslate
 gtts
 telegraph
-pyromod==1.5
+pyromod
 youtube-search-python
 pymongo
 yt-dlp==2023.03.04
