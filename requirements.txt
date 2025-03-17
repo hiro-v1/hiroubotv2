@@ -6,7 +6,7 @@ dnspython
 GitPython
 pykeyboard
 bs4
-pyrogram==2.0.117
+pyrogram==2.0.106
 Pillow==9.5.0
 pymediainfo
 opencv-python-headless 
