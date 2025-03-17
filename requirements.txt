@@ -34,5 +34,4 @@ emoji
 heroku3
 uvloop
 ffmpeg
-aria2c
 google-search-results
