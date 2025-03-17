@@ -7,7 +7,6 @@ import os
 import re
 
 from pyrogram import Client, filters
-from pyrogram.helpers import *
 from pyrogram.enums import *
 from pyrogram.errors import *
 from pyrogram.enums import ParseMode 
