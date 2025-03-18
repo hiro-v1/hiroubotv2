@@ -1,4 +1,5 @@
 from DanteUserbot import *
+from DanteUserbot.core.database.vars import get_vars  # Ensure get_vars is imported
 
 class EMO:
     async def PING(client):
@@ -39,7 +40,7 @@ class EMO:
     
     async def PROSES(client):
         emot_4 = await get_vars(client.me.id, "EMOJI_PROSES")
-        emot_prs = emot_4 if emot_4 else "5449621648112100255"
+        emot_prs = emot_4 if emot_prs else "5449621648112100255"
         if client.me.is_premium:
             _prses = f"<emoji id={emot_prs}>⭐️</emoji>"
         else:
