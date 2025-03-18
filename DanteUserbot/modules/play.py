@@ -3,10 +3,10 @@ import re
 import asyncio
 from pyrogram.types import Message
 from pytgcalls import GroupCallFactory
-from pytgcalls.types import ChatUpdate
-from pytgcalls.types import GroupCallParticipant
-from pytgcalls.types import MediaStream, AudioQuality, VideoQuality
-from pytgcalls.types import Update
+from pytgcalls.exceptions import PytgcallsError
+from pytgcalls.group_call_factory import GroupCallFactory
+from pytgcalls.implementation.group_call_file import GroupCallFileAction
+from pytgcalls.implementation.group_call import GroupCallAction
 from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
 from functools import partial
@@ -222,6 +222,8 @@ def add_to_queue(chat_id, name, file_path, yt_url, media_type, duration):
 async def play_audio(chat_id, file_name):
     """Memutar audio dengan kualitas terbaik yang tetap stabil."""
     try:
+        if not hasattr(ubot, "call_py"):
+            raise ValueError("Group call is not initialized.")
         await ubot.call_py.play(
             chat_id,
             MediaStream(
@@ -235,6 +237,8 @@ async def play_audio(chat_id, file_name):
 async def play_video(chat_id, file_name):
     """Memutar video dengan kualitas 720p agar tetap stabil."""
     try:
+        if not hasattr(ubot, "call_py"):
+            raise ValueError("Group call is not initialized.")
         await ubot.call_py.play(
             chat_id,
             MediaStream(
@@ -267,7 +271,8 @@ from DanteUserbot import ubot  # Assuming ubot is the client object
 
 # Initialize GroupCallFactory
 group_call_factory = GroupCallFactory(ubot)
-ubot.call_py = group_call_factory.get_file_group_call()
+if not hasattr(ubot, "call_py"):
+    ubot.call_py = group_call_factory.get_file_group_call()
 
 @DANTE.UBOT("vplay")
 @DANTE.GROUP
