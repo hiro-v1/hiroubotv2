@@ -135,11 +135,10 @@ class DANTE:
         """Memastikan hanya Admin/Sudo yang bisa menjalankan command."""
         async def function(client, message):
             await ensure_owner_sudo(client.me.id)  # Pastikan Owner tetap ada
-            admin_id = await get_list_from_vars(client.me.id, "SUDO_USER")  # Ambil daftar Sudo
+            admin_id = await get_list_from_vars(client.me.id, "SUDO_USER", "ID_NYA")  # Ambil daftar Sudo
 
             if message.from_user.id not in admin_id:
                 return  # Jika bukan admin, abaikan
-
             return await func(client, message)
 
         return function
@@ -250,66 +249,25 @@ class DANTE:
 
         return function     
 
-    @staticmethod
-    def INLINE(command=None):
-        """Decorator for handling inline queries with an optional command filter."""
-        def wrapper(func):
-            if command:
-                # Use a regex filter for the specified command
-                @bot.on_inline_query(filters.regex(f"^{command}$"))
-                async def wrapped_func(client, inline_query):
-                    await func(client, inline_query)
-            else:
-                # Handle all inline queries if no command is specified
-                @bot.on_inline_query()
-                async def wrapped_func(client, inline_query):
-                    await func(client, inline_query)
-
-            return wrapped_func
-
-        return wrapper
-
-    @staticmethod
-    def CALLBACK(command):
-        """Handles callback queries for inline keyboard buttons."""
-        def wrapper(func):
-            @bot.on_callback_query(filters.regex(command))
-            async def wrapped_func(client, callback_query):
-                try:
-                    await func(client, callback_query)
-                except Exception as e:
-                    print(f"⚠️ Error CALLBACK {command}: {e}")  # Log error for easier debugging
-
-            return wrapped_func
-
-        return wrapper
-
-    class INLINE:
-        """Decorator for handling inline queries and data."""
-        @staticmethod
-        def DATA(func):
-            """Handles inline callback data."""
-            async def wrapped_func(client, callback_query):
-                try:
-                    await func(client, callback_query)
-                except Exception as e:
-                    print(f"⚠️ Error INLINE.DATA: {e}")  # Log error for debugging
-
-            return wrapped_func
-
-def CALLBACK(command):
-    """Menangani callback query untuk tombol inline keyboard."""
-    def wrapper(func):
-        @bot.on_callback_query(filters.regex(command))
-        async def wrapped_func(client, callback_query):
-            try:
-                await func(client, callback_query)
-            except Exception as e:
-                print(f"⚠️ Error CALLBACK {command}: {e}")  # Log error agar debugging lebih mudah
-
-        return wrapped_func
-
-    return wrapper
+    def INLINE(command):
+         def wrapper(func):
+             @bot.on_inline_query(filters.regex(command))            @bot.on_inline_query(filters.regex(command))
+             async def wrapped_func(client, message):
+                 await func(client, message)
+ 
+             return wrapped_func
+ 
+         return wrapper
+ 
+     def CALLBACK(command):
+         def wrapper(func):
+             @bot.on_callback_query(filters.regex(command))
+             async def wrapped_func(client, message):
+                 await func(client, message)
+ 
+             return wrapped_func
+ 
+         return wrapper
 
 @staticmethod
 def SUDO(command):
