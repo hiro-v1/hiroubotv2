@@ -2,7 +2,6 @@ import os
 import re
 import asyncio
 from pyrogram.types import Message
-from pytgcalls import filters as fl
 from pytgcalls import PyTgCalls
 from pytgcalls.types import ChatUpdate
 from pytgcalls.types import GroupCallParticipant
