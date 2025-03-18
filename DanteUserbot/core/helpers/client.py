@@ -251,11 +251,19 @@ class DANTE:
         return function     
 
     @staticmethod
-    def INLINE(command):
+    def INLINE(command=None):
+        """Decorator for handling inline queries with an optional command filter."""
         def wrapper(func):
-            @bot.on_inline_query(filters.regex(command))
-            async def wrapped_func(client, message):
-                await func(client, message)
+            if command:
+                # Use a regex filter for the specified command
+                @bot.on_inline_query(filters.regex(f"^{command}$"))
+                async def wrapped_func(client, inline_query):
+                    await func(client, inline_query)
+            else:
+                # Handle all inline queries if no command is specified
+                @bot.on_inline_query()
+                async def wrapped_func(client, inline_query):
+                    await func(client, inline_query)
 
             return wrapped_func
 
