@@ -249,43 +249,52 @@ class DANTE:
 
         return function     
 
+    @staticmethod
     def INLINE(command):
-         def wrapper(func):
-             @bot.on_inline_query(filters.regex(command))            @bot.on_inline_query(filters.regex(command))
-             async def wrapped_func(client, message):
-                 await func(client, message)
- 
-             return wrapped_func
- 
-         return wrapper
- 
-     def CALLBACK(command):
-         def wrapper(func):
-             @bot.on_callback_query(filters.regex(command))
-             async def wrapped_func(client, message):
-                 await func(client, message)
- 
-             return wrapped_func
- 
-         return wrapper
+        """Decorator for handling inline queries with an optional command filter."""
+        def wrapper(func):
+            if command:
+                # Use a regex filter for the specified command
+                @bot.on_inline_query(filters.regex(command))
+                async def wrapped_func(client, message):
+                    await func(client, message)
 
-@staticmethod
-def SUDO(command):
-    """Menangani perintah yang hanya bisa digunakan oleh Sudo Users."""
-    async def is_sudo(_, client, message):
-        """Memastikan Owner tetap dalam daftar Sudo dan mengecek izin."""
-        await ensure_owner_sudo(client.me.id)
-        sudo_users = await get_list_from_vars(client.me.id, "SUDO_USER")
-        return message.from_user.id in sudo_users
+                return wrapped_func
 
-    def wrapper(func):
-        @ubot.on_message(filters.create(is_sudo) & filters.command(command))
-        async def wrapped_func(client, message):
-            try:
-                await func(client, message)
-            except Exception as e:
-                print(f"⚠️ Error SUDO command {command}: {e}")
+        return wrapper
 
-        return wrapped_func
+    @staticmethod
+    def CALLBACK(command):
+        """Decorator for handling callback queries with a regex filter."""
+        def wrapper(func):
+            @bot.on_callback_query(filters.regex(command))
+            async def wrapped_func(client, callback_query):
+                try:
+                    await func(client, callback_query)
+                except Exception as e:
+                    print(f"⚠️ Error CALLBACK {command}: {e}")  # Log error for easier debugging
 
-    return wrapper
+            return wrapped_func
+
+        return wrapper
+
+    @staticmethod
+    def SUDO(command):
+        """Handles commands that can only be used by Sudo Users."""
+        async def is_sudo(_, client, message):
+            """Ensure Owner remains in the Sudo list and check permissions."""
+            await ensure_owner_sudo(client.me.id)
+            sudo_users = await get_list_from_vars(client.me.id, "SUDO_USER")
+            return message.from_user.id in sudo_users
+
+        def wrapper(func):
+            @ubot.on_message(filters.create(is_sudo) & filters.command(command))
+            async def wrapped_func(client, message):
+                try:
+                    await func(client, message)
+                except Exception as e:
+                    print(f"⚠️ Error SUDO command {command}: {e}")
+
+            return wrapped_func
+
+        return wrapper
