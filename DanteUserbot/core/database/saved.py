@@ -76,3 +76,11 @@ async def remove_pm_id(me_id, user_id):
     if pm_id:
         list_id = [int(x) for x in str(pm_id).split() if x != str(user_id)]
         await set_vars(me_id, "PM_PERMIT", " ".join(map(str, list_id)))
+
+async def get_chat(chat_id):
+    try:
+        result = await varsdb.find_one({"_id": chat_id})
+        return result if result else None
+    except Exception as e:
+        print(f"Error getting chat: {e}")
+        return None
