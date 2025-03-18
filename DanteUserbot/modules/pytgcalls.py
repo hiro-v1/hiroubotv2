@@ -14,9 +14,9 @@ async def clear_chat_queue(_, chat_id: int):
     if chat_id in QUEUE:
         clear_queue(chat_id)
 
-@ubot.call_py.on_audio_playout_ended
-async def audio_playout_ended_handler(client, chat_id: int):
-    print(f"Audio playout ended for chat_id: {chat_id}")
+@ubot.call_py.on(GroupCallFileAction.PLAYOUT_ENDED)
+async def playout_ended_handler(client, chat_id: int):
+    print(f"Playout ended for chat_id: {chat_id}")
     op = await skip_current_song(client, chat_id)
     if op == 1:
         await client.send_message(chat_id, "`Queue is Empty, Leaving Voice Chat...`")
