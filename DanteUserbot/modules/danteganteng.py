@@ -1,16 +1,41 @@
 import io
 import os
 
-import google.generativeai as genai
+__MODULE__ = "AI Assistant"
+__HELP__ = """<blockquote><b>
+<b>『 ʙᴀɴᴛᴜᴀɴ ᴜɴᴛᴜᴋ ᴘᴇʀɪɴᴛᴀʜ ᴀɪ 』</b>
+
+📌 **Gunakan perintah berikut untuk berinteraksi dengan AI dan menghasilkan teks atau gambar.**
+
+<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{0}gemini</code> <i>(teks)</i>
+<b>• ᴇxᴘʟᴀɴᴀsɪ:</b> Menggunakan Google Gemini AI untuk menghasilkan teks berdasarkan input yang diberikan.
+
+<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{0}pertanyaan</code> <i>(teks)</i>
+<b>• ᴇxᴘʟᴀɴᴀsɪ:</b> Menggunakan API AI khusus untuk menjawab pertanyaan dengan gaya komunikasi yang lebih kasual.
+
+<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{0}fluxai</code> <i>(deskripsi gambar)</i>
+<b>• ᴇxᴘʟᴀɴᴀsɪ:</b> Menggunakan AI untuk menghasilkan gambar berdasarkan deskripsi yang diberikan.
+
+<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{0}generate</code> <i>(deskripsi gambar)</i>
+<b>• ᴇxᴘʟᴀɴᴀsɪ:</b> Menggunakan layanan text-to-image AI untuk membuat gambar dari teks input.
+
+<b>🔹 Catatan:</b> Pastikan bot memiliki akses ke API yang diperlukan agar fitur ini dapat bekerja dengan baik.
+</b></blockquote>"""
+
+try:
+    import google.generativeai as genai
+    genai.configure(api_key="AIzaSyBw_hspHrlcySkIsa9Qx5zA7PqKAyCwwPs")
+except ModuleNotFoundError:
+    genai = None  # Handle missing module gracefully
+
 from pyrogram.enums import ChatAction
 from pyrogram.errors import *
 
 from DanteUserbot import *
 
-genai.configure(api_key="AIzaSyBw_hspHrlcySkIsa9Qx5zA7PqKAyCwwPs")
-
-
 def gemini(text):
+    if not genai:
+        return "Google Generative AI module is not installed."
     try:
         generation_config = {
             "temperature": 0.6,
@@ -106,12 +131,13 @@ async def costum_api(client, text, user_id):
     ]
     url = "https://api.botcahx.eu.org/api/search/openai-custom"
     payload = {"message": bahan, "apikey": "bee"}
-    res = await fetch.post(url, json=payload)
-    if res.status_code == 200:
-        data = res.json()
-        return data["result"]
-    else:
-        return f"{res.text}"
+    async with fetch.session() as session:
+        res = await session.post(url, json=payload)
+        if res.status_code == 200:
+            data = await res.json()
+            return data["result"]
+        else:
+            return f"{res.text}"
 
 
 @DANTE.UBOT("pertanyaan")
