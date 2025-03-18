@@ -13,7 +13,7 @@ from pyrogram.types import *
 from pyrogram.errors.exceptions import FloodWait
 from pyrogram.errors import FloodWait, ChannelPrivate
 from DanteUserbot import *
-from DanteUserbot.core.helpers.emoji import
+from DanteUserbot.core.helpers.emoji import EMO  # Import the EMO class explicitly
 from DanteUserbot.core.database.bcast import (
     is_blacklisted,
     add_blacklist,
