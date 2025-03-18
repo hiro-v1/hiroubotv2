@@ -53,7 +53,8 @@ async def clear_absen_command(c, m):
     sks = await EMO.BERHASIL(c)
     await m.reply(f"{sks}<b>sᴇᴍᴜᴀ ᴀʙsᴇɴ ʙᴇʀʜᴀsɪʟ ᴅɪʜᴀᴘᴜs</b>")
 
-@DANTE.INLINE()
+# Register the inline query handler explicitly
+@DANTE.add_handler(filters.inline_query)
 async def absen_query(c, iq):
     if iq.query == "absen_in":  # Check if the inline query matches "absen_in"
         user_id = iq.from_user.id
