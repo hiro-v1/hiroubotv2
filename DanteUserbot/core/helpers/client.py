@@ -250,6 +250,7 @@ class DANTE:
 
         return function     
 
+    @staticmethod
     def INLINE(command):
         def wrapper(func):
             @bot.on_inline_query(filters.regex(command))
@@ -274,6 +275,19 @@ class DANTE:
             return wrapped_func
 
         return wrapper
+
+    class INLINE:
+        """Decorator for handling inline queries and data."""
+        @staticmethod
+        def DATA(func):
+            """Handles inline callback data."""
+            async def wrapped_func(client, callback_query):
+                try:
+                    await func(client, callback_query)
+                except Exception as e:
+                    print(f"⚠️ Error INLINE.DATA: {e}")  # Log error for debugging
+
+            return wrapped_func
 
 def CALLBACK(command):
     """Menangani callback query untuk tombol inline keyboard."""
