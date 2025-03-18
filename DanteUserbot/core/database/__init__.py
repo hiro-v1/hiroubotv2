@@ -21,4 +21,4 @@ from DanteUserbot.core.database.logger import *
 from DanteUserbot.core.database.bcast import *
 from DanteUserbot.core.database.permit import *
 from DanteUserbot.core.database.filters import *
-from DanteUserbot.core.database.expired import get_chat, get_expired_date
+from DanteUserbot.core.database.expired import get_chat, get_expired_date, remove_chat
