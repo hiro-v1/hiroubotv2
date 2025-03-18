@@ -95,23 +95,23 @@ class DANTE:
 
         return function
 
- @staticmethod
-def UBOT(command, filter=None):
-    """Menangani perintah yang hanya bisa digunakan oleh Sudo."""
-    if filter is None:
-        filter = filters.create(if_sudo)  # Menggunakan if_sudo yang telah diperbaiki
+    @staticmethod
+    def UBOT(command, filter=None):
+        """Menangani perintah yang hanya bisa digunakan oleh Sudo."""
+        if filter is None:
+            filter = filters.create(if_sudo)  # Menggunakan if_sudo yang telah diperbaiki
 
-    def decorator(func):
-        @ubot.on_message(ubot.cmd_prefix(command) & filter)
-        async def wrapped_func(client, message):
-            try:
-                await func(client, message)
-            except Exception as e:
-                print(f"⚠️ Error UBOT command {command}: {e}")  # Log error agar mudah debugging
+        def decorator(func):
+            @ubot.on_message(ubot.cmd_prefix(command) & filter)
+            async def wrapped_func(client, message):
+                try:
+                    await func(client, message)
+                except Exception as e:
+                    print(f"⚠️ Error UBOT command {command}: {e}")  # Log error agar mudah debugging
 
-        return wrapped_func
+            return wrapped_func
 
-    return decorator
+        return decorator
 
     @staticmethod
     def ME_USER(command, filter=FILTERS.ME_USER):
@@ -129,21 +129,21 @@ def UBOT(command, filter=None):
             return wrapped_func
 
         return wrapper
-        
-@staticmethod
-def ADMIN(func):
-    """Memastikan hanya Admin/Sudo yang bisa menjalankan command."""
-    async def function(client, message):
-        await ensure_owner_sudo(client.me.id)  # Pastikan Owner tetap ada
-        admin_id = await get_list_from_vars(client.me.id, "SUDO_USER")  # Ambil daftar Sudo
 
-        if message.from_user.id not in admin_id:
-            return  # Jika bukan admin, abaikan
+    @staticmethod
+    def ADMIN(func):
+        """Memastikan hanya Admin/Sudo yang bisa menjalankan command."""
+        async def function(client, message):
+            await ensure_owner_sudo(client.me.id)  # Pastikan Owner tetap ada
+            admin_id = await get_list_from_vars(client.me.id, "SUDO_USER")  # Ambil daftar Sudo
 
-        return await func(client, message)
+            if message.from_user.id not in admin_id:
+                return  # Jika bukan admin, abaikan
 
-    return function
-    
+            return await func(client, message)
+
+        return function
+
     @staticmethod
     def NO_CMD_UBOT(result, ubot):
         query_mapping = {
