@@ -2,7 +2,7 @@ import os
 import re
 import asyncio
 from pyrogram.types import Message
-from pytgcalls import PyTgCalls
+from pytgcalls import GroupCallFactory
 from pytgcalls.types import ChatUpdate
 from pytgcalls.types import GroupCallParticipant
 from pytgcalls.types import MediaStream, AudioQuality, VideoQuality
@@ -261,6 +261,10 @@ async def play_with_buffer(chat_id, file_name, is_video=False):
         await buffering_msg.edit("🎵 **Sedang diputar...**")
     except Exception as e:
         await buffering_msg.edit(f"❌ **Gagal memutar:** {str(e)}") 
+
+# Initialize GroupCallFactory
+group_call_factory = GroupCallFactory(client)
+ubot.call_py = group_call_factory.get_file_group_call()
 
 @DANTE.UBOT("vplay")
 @DANTE.GROUP
