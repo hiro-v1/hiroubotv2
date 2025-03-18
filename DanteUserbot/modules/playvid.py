@@ -3,12 +3,12 @@ import requests
 from asyncio import Queue
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from pytgcalls import PyTgCalls
-from pytgcalls import InputStream, InputAudioStream, InputVideoStream
+from pytgcalls.group_call_factory import GroupCallFactory
 from DanteUserbot import *
 
 # Menggunakan sesi utama DanteUserbot
-pytgcalls = PyTgCalls(ubot)
+group_call_factory = GroupCallFactory(ubot)
+group_call = group_call_factory.get_file_group_call()
 queue = Queue()
 
 # Fungsi untuk mendapatkan URL Video
@@ -51,10 +51,11 @@ async def play_video(client: Client, message: Message, platform: str):
         video_url = get_url(platform, video_id)
 
         if queue.empty():
-            await pytgcalls.join_group_call(chat_id, InputVideoStream(video_url))
+            await group_call.start(chat_id)
+            await group_call.input_video_stream(video_url)
             await loading_msg.edit(f"{sks} Sedang memutar video {platform.capitalize()}: `{video_id}`")
         else:
-            await queue.put((chat_id, InputVideoStream(video_url), video_id))
+            await queue.put((chat_id, video_url, video_id))
             await loading_msg.edit(f"🎵 Video ditambahkan ke antrian.")
     except Exception as e:
         await loading_msg.edit(f"{ggl} Terjadi kesalahan: `{str(e)}`")
@@ -94,10 +95,10 @@ async def skip_video(client: Client, message: Message):
         return await message.reply_text("📭 **Tidak ada video dalam antrian untuk dilewati!**")
 
     next_video = queue.get_nowait()
-    chat_id, video_stream, video_id = next_video
+    chat_id, video_url, video_id = next_video
 
     try:
-        await pytgcalls.join_group_call(chat_id, video_stream)
+        await group_call.input_video_stream(video_url)
         await message.reply_text(f"⏭ Melewati ke video berikutnya: `{video_id}`")
     except Exception as e:
         await message.reply_text(f"❌ **Gagal melewati video:** `{str(e)}`")
