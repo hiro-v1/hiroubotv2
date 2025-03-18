@@ -1,5 +1,5 @@
 from DanteUserbot import *
-from pytgcalls import PyTgCalls
+from pytgcalls import GroupCallFactory
 from pytgcalls.types import ChatUpdate, GroupCallParticipant, MediaStream, Update, VideoQuality, AudioQuality, ChatUpdate
 from pytgcalls.types import StreamAudioEnded
 from DanteUserbot.core.helpers.queues import *
