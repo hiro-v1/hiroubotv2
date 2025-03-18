@@ -1,5 +1,5 @@
 from DanteUserbot import *
-from DanteUserbot.core.database.vars import get_vars  # Ensure get_vars is imported
+from DanteUserbot.core.database.setvar import get_vars  # Ensure get_vars is imported
 
 class EMO:
     async def PING(client):
