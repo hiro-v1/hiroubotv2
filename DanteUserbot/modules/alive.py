@@ -11,6 +11,7 @@ from pyrogram.raw.functions import Ping
 from pyrogram.types import (InlineKeyboardMarkup, InlineQueryResultArticle,
                             InputTextMessageContent, InlineKeyboardButton)
 from DanteUserbot.core.helpers.unpack import unpackInlineMessage
+from DanteUserbot.core.helpers import *
 
 # Caching untuk menghindari pengambilan data berulang
 dialog_cache = {}
@@ -32,7 +33,7 @@ async def get_dialog_counts(bot_id, client):
     return users, groups
 
 @DANTE.CALLBACK("sys_stats")
-@INLINE.DATA
+@DANTE.INLINE
 async def _sys_callback(client, cq):
     """Menampilkan statistik sistem saat tombol 'stats' ditekan."""
     text = sys_stats()
