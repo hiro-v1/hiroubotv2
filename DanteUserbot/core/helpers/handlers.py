@@ -1,7 +1,7 @@
 from DanteUserbot import *
 from pytgcalls import GroupCallFactory
-from pytgcalls.types import MediaStream, StreamAudioEnded 
-from pytgcalls.types.stream import VideoQuality, AudioQuality 
+from pytgcalls.stream import MediaStream  # Updated import path for MediaStream
+from pytgcalls.types.stream import VideoQuality, AudioQuality  # Corrected import paths
 from DanteUserbot.core.helpers.queues import *
 
 async def skip_current_song(client, chat_id):
