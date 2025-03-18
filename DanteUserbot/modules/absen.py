@@ -15,7 +15,7 @@ from pyrogram.types import (InlineKeyboardMarkup, InlineQueryResultArticle, Inpu
 from datetime import datetime
 import pytz
 import asyncio
-
+from DanteUserbot.core.helpers.client import *
 from DanteUserbot import *
 from DanteUserbot.core.function.emoji import EMO
 
@@ -53,33 +53,29 @@ async def clear_absen_command(c, m):
     sks = await EMO.BERHASIL(c)
     await m.reply(f"{sks}<b>sᴇᴍᴜᴀ ᴀʙsᴇɴ ʙᴇʀʜᴀsɪʟ ᴅɪʜᴀᴘᴜs</b>")
 
-# Register the inline query handler explicitly
-@DANTE.add_handler(filters.inline_query)
+@DANTE.INLINE("^absen_in")
 async def absen_query(c, iq):
-    if iq.query == "absen_in":  # Check if the inline query matches "absen_in"
-        user_id = iq.from_user.id
-        mention = iq.from_user.mention
-        timestamp = datetime.now(pytz.timezone('asia/Jakarta')).strftime("%d-%m-%Y")
-        jam = datetime.now(pytz.timezone('asia/Jakarta')).strftime("%H:%M:%S")
-        hadir_list.append({"user_id": user_id, "mention": mention, "jam": jam})
-        hadir_text = get_hadir_list()
+    user_id = iq.from_user.id
+    mention = iq.from_user.mention
+    timestamp = datetime.now(pytz.timezone('asia/Jakarta')).strftime("%d-%m-%Y")
+    jam = datetime.now(pytz.timezone('asia/Jakarta')).strftime("%H:%M:%S")
+    hadir_list.append({"user_id": user_id, "mention": mention, "jam": jam})
+    hadir_text = get_hadir_list()
 
-        text = f"**ᴀʙsᴇɴ ᴛᴀɴɢɢᴀʟ:**\n{timestamp}\n\n**ʟɪsᴛ ᴀʙsᴇɴ:**\n{hadir_text}\n\n"
-        buttons = [[InlineKeyboardButton("ʜᴀᴅɪʀ", callback_data="absen_hadir")]]
-        keyboard = InlineKeyboardMarkup(buttons)
-        await c.answer_inline_query(
-            iq.id,
-            cache_time=0,
-            results=[
-                (
-                    InlineQueryResultArticle(
-                        title="💬",
-                        input_message_content=InputTextMessageContent(text),
-                        reply_markup=keyboard
-                    )
-                )
-            ],
-        )
+    text = f"**ᴀʙsᴇɴ ᴛᴀɴɢɢᴀʟ:**\n{timestamp}\n\n**ʟɪsᴛ ᴀʙsᴇɴ:**\n{hadir_text}\n\n"
+    buttons = [[InlineKeyboardButton("ʜᴀᴅɪʀ", callback_data="absen_hadir")]]
+    keyboard = InlineKeyboardMarkup(buttons)
+    await c.answer_inline_query(
+        iq.id,
+        cache_time=0,
+        results=[
+            InlineQueryResultArticle(
+                title="💬",
+                input_message_content=InputTextMessageContent(text),
+                reply_markup=keyboard
+            )
+        ],
+    )
 
 @DANTE.CALLBACK("absen_hadir")
 async def hadir_callback(c, cq):
