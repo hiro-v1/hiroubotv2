@@ -3,7 +3,6 @@ import asyncio
 import os
 from pyrogram.types import Message
 from pyrogram import Client
-from pyrogram.helpers import *
 from pyrogram.enums import *
 from pyrogram.errors import *
 from pyrogram.raw.functions.messages import DeleteHistory
@@ -42,4 +41,4 @@ async def cc(client, message):
         await message.reply("berhasil menghapus semua pesan pengguna.")
     except Exception as ev:
         print(f"Error saat menghapus pesan: {ev}")
-        await message.reply("gagal menghapus pesan pengguna.")     
+        await message.reply("gagal menghapus pesan pengguna.")
