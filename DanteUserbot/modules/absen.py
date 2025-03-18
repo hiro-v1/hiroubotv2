@@ -61,7 +61,7 @@ async def clear_absen_command(c, m):
     await m.reply(f"{sks} **sᴇᴍᴜᴀ ᴀʙsᴇɴ ʙᴇʀʜᴀsɪʟ ᴅɪʜᴀᴘᴜs.**")
 
 # Menangani Query Inline untuk Absen
-@DANTE.INLINE("absen_in")  # ✅ Perbaikan dari `@DANTE.INLINE()`
+@DANTE.INLINE("absen_in")
 async def absen_query(c, iq):
     user_id = iq.from_user.id
     mention = iq.from_user.mention
