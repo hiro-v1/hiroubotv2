@@ -30,3 +30,10 @@ async def get_DanteUserbots():
             )
         )
     return data
+
+async def get_expired_date(user_id):
+    """
+    Retrieve the expiration date for a user.
+    """
+    user_data = await ubotdb.find_one({"user_id": user_id}, {"_id": 0, "expired_date": 1})
+    return user_data.get("expired_date") if user_data else None
