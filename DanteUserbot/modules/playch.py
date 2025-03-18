@@ -2,18 +2,25 @@ import asyncio
 import re
 from pyrogram import filters
 from pyrogram.types import Message
-from pytgcalls import StreamType
-from pytgcalls.types.input_stream import VideoPiped
+from pytgcalls import GroupCallFactory
+from pytgcalls.exceptions import PytgcallsError
+from pytgcalls.group_call_factory import GroupCallFactory
+from pytgcalls.implementation.group_call_file import GroupCallFileAction
+from pytgcalls.implementation.group_call import GroupCallAction
 
 from DanteUserbot import *
 from DanteUserbot.core.helpers.client import bot
+
+# Initialize GroupCallFactory
+group_call_factory = GroupCallFactory(DANTE)
+if not hasattr(DANTE, "call_py"):
+    DANTE.call_py = group_call_factory.get_file_group_call()
 
 # Simpan daftar playlist
 PLAYLIST = {}
 
 # Regex untuk cek apakah link Telegram valid
 TELEGRAM_LINK_PATTERN = r"(https?://)?(t\.me|telegram\.me)/([a-zA-Z0-9_]+)/(\d+)?"
-
 
 async def get_video_from_link(client, link):
     """Mengambil video dari channel/grup berdasarkan link."""
@@ -44,7 +51,6 @@ async def get_video_from_link(client, link):
     except Exception as e:
         return None, f"❌ Gagal mengambil video: {e}"
 
-
 @DANTE.UBOT("chplay")
 async def chplay(client: Client, message: Message):
     """Memutar video dari channel/grup berdasarkan link."""
@@ -71,7 +77,6 @@ async def chplay(client: Client, message: Message):
 
     await message.reply(f"▶ **Menambahkan ke playlist:** {link} 🎶")
 
-
 async def play_next_video(client, chat_id):
     """Memutar video berikutnya dari playlist."""
     if chat_id not in PLAYLIST or not PLAYLIST[chat_id]:
@@ -80,15 +85,13 @@ async def play_next_video(client, chat_id):
     video_file_id = PLAYLIST[chat_id].pop(0)
 
     try:
-        await client.call_py.join_group_call(
+        await DANTE.call_py.join_group_call(
             chat_id,
             VideoPiped(video_file_id),
-            stream_type=StreamType().pulse_stream,
         )
         await bot.send_message(chat_id, "🎬 **Memutar video berikutnya...**")
     except Exception as e:
         await bot.send_message(chat_id, f"❌ **Gagal memutar video:** {e}")
-
 
 @DANTE.UBOT("stopcp")
 async def stopcp(client: Client, message: Message):
@@ -96,7 +99,7 @@ async def stopcp(client: Client, message: Message):
     chat_id = message.chat.id
 
     try:
-        await client.call_py.leave_group_call(chat_id)
+        await DANTE.call_py.leave_group_call(chat_id)
         PLAYLIST[chat_id] = []  # Hapus playlist
         await message.reply("🛑 **Video dihentikan dan playlist dikosongkan!**")
     except Exception as e:
