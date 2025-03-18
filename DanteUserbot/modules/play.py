@@ -262,8 +262,11 @@ async def play_with_buffer(chat_id, file_name, is_video=False):
     except Exception as e:
         await buffering_msg.edit(f"❌ **Gagal memutar:** {str(e)}") 
 
+# Ensure the client object is imported or initialized
+from DanteUserbot import ubot  # Assuming ubot is the client object
+
 # Initialize GroupCallFactory
-group_call_factory = GroupCallFactory(client)
+group_call_factory = GroupCallFactory(ubot)
 ubot.call_py = group_call_factory.get_file_group_call()
 
 @DANTE.UBOT("vplay")
