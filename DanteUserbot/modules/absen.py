@@ -19,6 +19,7 @@ import asyncio
 
 from DanteUserbot import *
 from DanteUserbot.core.function.emoji import EMO
+from DanteUserbot.core.helpers.client import *
 
 # Daftar yang hadir
 hadir_list = []
