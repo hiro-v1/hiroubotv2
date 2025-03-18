@@ -17,3 +17,38 @@ from DanteUserbot.core.helpers.pmdb import *
 from DanteUserbot.core.helpers.Danstring import *
 from DanteUserbot.core.helpers.emoji import *
 
+def loadModule():
+    """
+    Function to load modules dynamically.
+    Returns a list of module names.
+    """
+    # Example implementation (adjust as needed)
+    import os
+    modules_dir = os.path.join(os.path.dirname(__file__), "..", "modules")
+    return [
+        f[:-3]
+        for f in os.listdir(modules_dir)
+        if f.endswith(".py") and not f.startswith("__")
+    ]
+
+__all__ = [
+    "client",
+    "font_tool",
+    "get_file_id",
+    "inline",
+    "kang_tool",
+    "misc",
+    "text",
+    "unpack",
+    "tools",
+    "uptime",
+    "yt_dl",
+    "msg_type",
+    "queues",
+    "handlers",
+    "pmdb",
+    "Danstring",
+    "emoji",
+    "loadModule",
+]
+
