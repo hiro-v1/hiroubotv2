@@ -9,11 +9,14 @@ API_IP_LOOKUP = base64.b64decode("M0QwN0UyRUFBRjU1OTQwQUY0NDczNEMzRjJBQzdDMUE=")
 
 async def fetch_json(url):
     """Fungsi untuk mengambil data JSON dari API."""
-    async with aiohttp.ClientSession() as session:
+    session = aiohttp.ClientSession()
+    try:
         async with session.get(url) as response:
             if response.status == 200:
                 return await response.json()
             return None
+    finally:
+        await session.close()
 
 @DANTE.UBOT("ip")
 async def lacak_ip(client, message):
@@ -79,7 +82,7 @@ async def whois_domain(client, message):
         await ran.edit("⚠️ Domain tidak valid atau tidak ditemukan.")
 
 __MODULE__ = "ipsearch"
-__HELP__ = f"""
+__HELP__ = """
 <b>🔍 Bantuan Untuk IP & Domain Lookup</b>
 
 • <code>.ip</code> <b>[IP Address]</b>
@@ -89,4 +92,5 @@ __HELP__ = f"""
 • <code>.ipd</code> <b>[Nama Domain]</b>
    ➜ <i>Melihat informasi WHOIS sebuah domain.</i>
    Contoh: <code>.ipd google.com</code>
+"""
 
