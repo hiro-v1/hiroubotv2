@@ -260,6 +260,21 @@ class DANTE:
 
         return wrapper
 
+    @staticmethod
+    def CALLBACK(command):
+        """Handles callback queries for inline keyboard buttons."""
+        def wrapper(func):
+            @bot.on_callback_query(filters.regex(command))
+            async def wrapped_func(client, callback_query):
+                try:
+                    await func(client, callback_query)
+                except Exception as e:
+                    print(f"⚠️ Error CALLBACK {command}: {e}")  # Log error for easier debugging
+
+            return wrapped_func
+
+        return wrapper
+
 def CALLBACK(command):
     """Menangani callback query untuk tombol inline keyboard."""
     def wrapper(func):
