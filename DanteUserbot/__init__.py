@@ -290,8 +290,8 @@ bot = Client(
     "DanteUserbot",
     api_id=API_ID,  # Replace with your API ID
     api_hash=API_HASH,  # Replace with your API Hash
-    bot_token=BOT_TOKEN,  # Replace with your Bot Token
-    storage=CustomMongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="sessions")  # Use CustomMongoStorage
+    bot_token=BOT_TOKEN  # Replace with your Bot Token
+    # Removed storage argument
 )
 
 ubot = Ubot(
