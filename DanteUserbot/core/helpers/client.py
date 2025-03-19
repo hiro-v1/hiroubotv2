@@ -2,9 +2,12 @@ from pyrogram import filters
 from pyrogram.enums import ChatType
 from DanteUserbot import *
 import re
-from pyrogram.types import InlineKeyboardButton  
-MSG = "Message Placeholder"
+from pyrogram.types import InlineKeyboardButton  # Pastikan ini diimpor
+
+MSG = "Message Placeholder"  # Tambahkan definisi MSG sesuai kebutuhan
+
 def Button(text, callback_data=None, url=None):
+    """Helper function to create an InlineKeyboardButton."""
     return InlineKeyboardButton(text=text, callback_data=callback_data, url=url)
 
 class FILTERS:
@@ -100,18 +103,21 @@ class DANTE:
         return function
 
     @staticmethod
-    def UBOT(command: str, filter=None):
+    def UBOT(command, filter=None):
+        """Menangani perintah yang hanya bisa digunakan oleh Sudo."""
         if filter is None:
-            filter = filters.create(if_sudo)  # Gunakan if_sudo untuk memfilter pengguna Sudo
-        
+            filter = filters.create(if_sudo)  # Menggunakan if_sudo yang telah diperbaiki
+
         def decorator(func):
             @ubot.on_message(ubot.cmd_prefix(command) & filter)
             async def wrapped_func(client, message):
                 try:
                     await func(client, message)
                 except Exception as e:
-                    print(f"⚠️ Error UBOT command {command}: {e}")
+                    print(f"⚠️ Error UBOT command {command}: {e}")  # Log error agar mudah debugging
+
             return wrapped_func
+
         return decorator
 
     @staticmethod
@@ -204,35 +210,41 @@ class DANTE:
     @staticmethod
     def PRIVATE(func):
         async def function(client, message):
-            if message.chat.type != ChatType.PRIVATE:
-                return
+            if not message.chat.type == ChatType.PRIVATE:
+                return 
             return await func(client, message)
+
         return function
 
     @staticmethod
-    def AFK(afk_no: bool):
+    def AFK(afk_no):
         def wrapper(func):
-            afk_filter = (
-                (filters.mentioned | filters.private) & ~filters.bot & ~filters.me & filters.incoming
-                if afk_no else
-                filters.me & ~filters.incoming
+            afk_check = (
+                (filters.mentioned | filters.private)
+                & ~filters.bot
+                & ~filters.me
+                & filters.incoming
+                if afk_no
+                else filters.me & ~filters.incoming
             )
 
-            @ubot.on_message(afk_filter, group=10)
+            @ubot.on_message(afk_check, group=10)
             async def wrapped_func(client, message):
                 await func(client, message)
+
             return wrapped_func
+
         return wrapper
         
     @staticmethod
     def TOP_CMD(func):
-        """Decorator untuk mencatat penggunaan command."""
         async def function(client, message):
             cmd = message.command[0].lower()
             top = await get_vars(bot.me.id, cmd, "modules")
             get = int(top) + 1 if top else 1
             await set_vars(bot.me.id, cmd, get, "modules")
             return await func(client, message)
+
         return function
         
     @staticmethod
@@ -245,26 +257,33 @@ class DANTE:
         return function     
 
     @staticmethod
-    def INLINE(command: str):
-        """Decorator untuk menangani inline query dengan regex filter."""
+    def INLINE(command):
+        """Decorator for handling inline queries with an optional command filter."""
         def wrapper(func):
-            @bot.on_inline_query(filters.regex(command))
-            async def wrapped_func(client, inline_query):
-                await func(client, inline_query)
-            return wrapped_func
+            if command:
+                # Use a regex filter for the specified command
+                @bot.on_inline_query(filters.regex(command))
+                async def wrapped_func(client, message):
+                    await func(client, message)
+
+                return wrapped_func
+
         return wrapper
 
     @staticmethod
-    def CALLBACK(command: str):
-        """Decorator untuk menangani callback query dengan regex filter."""
+    def CALLBACK(command):
+        """Decorator for handling callback queries with a regex filter."""
         def wrapper(func):
             @bot.on_callback_query(filters.regex(command))
             async def wrapped_func(client, callback_query):
+                print(f"[LOG] Callback {command} dipanggil oleh {callback_query.from_user.id}")  # Tambahkan log
                 try:
                     await func(client, callback_query)
                 except Exception as e:
-                    print(f"⚠️ Error CALLBACK {command}: {e}")
+                    print(f"⚠️ Error CALLBACK {command}: {e}")  # Log error untuk debugging
+
             return wrapped_func
+
         return wrapper
 
     @staticmethod
