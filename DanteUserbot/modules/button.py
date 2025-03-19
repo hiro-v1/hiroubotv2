@@ -109,3 +109,14 @@ async def close_usernya(client, callback_query):
                 await x.delete_messages(inline_data.chat_id, inline_data.message_id)
     except Exception as e:
         print(f"Error in close_usernya: {e}")
+
+@DANTE.CALLBACK("help_back")
+async def help_back(client, callback_query):
+    buttons = [
+        [InlineKeyboardButton("📚 Modul", callback_data="help_back")],
+        [InlineKeyboardButton("❌ Tutup", callback_data="cl_close")],
+    ]
+    await callback_query.edit_message_text(
+        "📚 **Daftar Modul:**\n\n1. Modul A\n2. Modul B\n3. Modul C",
+        reply_markup=InlineKeyboardMarkup(buttons),
+    )
