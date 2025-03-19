@@ -199,3 +199,23 @@ async def _(client, message):
 @DANTE.BOT("start")
 async def _(client, message):
     await start_cmd(client, message)
+
+from DanteUserbot import bot
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+@DANTE.BOT("start")
+async def start_handler(client, message):
+    buttons = [
+        [
+            InlineKeyboardButton("📚 Help", callback_data="help_back"),
+            InlineKeyboardButton("🤖 Buat Userbot", callback_data="bahan"),
+        ],
+        [
+            InlineKeyboardButton("💻 Modul", callback_data="help_back"),
+            InlineKeyboardButton("☎️ Chat", callback_data="takok"),
+        ],
+    ]
+    await message.reply(
+        f"👋 Hi {message.from_user.first_name},\n\nSelamat datang di DanteUserbot!",
+        reply_markup=InlineKeyboardMarkup(buttons),
+    )
