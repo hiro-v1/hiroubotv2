@@ -64,6 +64,7 @@ async def alive_cmd(client, message):
     )
     await message.reply_inline_bot_result(x.query_id, x.results[0].id, quote=True)
 
+
 @DANTE.INLINE("^alive")
 async def alive_inline_handler(client, inline_query):
     """Menampilkan status bot dalam mode inline dengan `get_dialog_counts()`."""
@@ -132,7 +133,7 @@ async def alive_inline_handler(client, inline_query):
         )
 
 @DANTE.CALLBACK("alv_cls")
-@INLINE.DATA
+@DANTE.INLINE("alv_cls")
 async def alive_close(client, callback_query):
     """Menutup pesan alive inline."""
     get_id = callback_query.data.split()
