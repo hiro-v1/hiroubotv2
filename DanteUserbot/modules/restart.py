@@ -7,6 +7,7 @@ from pytz import timezone
 
 # Add missing imports
 from DanteUserbot.core.helpers import Ubot, loadModule, set_expired_date, add_ubot, get_DanteUserbots
+from DanteUserbot.core.helpers.client import DANTE
 
 @DANTE.BOT("login", FILTERS.OWNER)
 @DANTE.UBOT("login")
