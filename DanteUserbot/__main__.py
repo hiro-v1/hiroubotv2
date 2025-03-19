@@ -10,8 +10,7 @@ async def hapus_session_kadaluarsa():
     for filename in os.listdir():
         if filename.endswith(".session"):
             filepath = os.path.join(os.getcwd(), filename)
-            if os.path.getsize(filepath) == 0:  # Jika file kosong, berarti sesi sudah tidak digunakan
-                os.remove(filepath)
+            os.remove(filepath)  # Remove all SQLite session files
 
 # Fungsi untuk membersihkan userbot yang gagal atau tidak merespons
 async def bersihkan_userbot(user_id, tambahkan_premium=False):
@@ -56,7 +55,7 @@ async def start_ubot(user_id, _ubot):
 
 # Fungsi utama untuk menjalankan semua userbot
 async def main():
-    await hapus_session_kadaluarsa()  # Use the Python implementation instead of bash
+    await hapus_session_kadaluarsa()  # Clean up SQLite session files
 
     userbots = await get_DanteUserbots()
     tasks = [asyncio.shield(start_ubot(int(bot["name"]), bot)) for bot in userbots]
