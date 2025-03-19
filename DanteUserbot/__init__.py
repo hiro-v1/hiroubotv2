@@ -285,18 +285,16 @@ class CustomMongoStorage(BaseStorage):
     async def clear(self):
         await self.collection.delete_many({})
 
-# Configure bot to use custom MongoDB session storage
+# Remove the storage argument from Bot and Ubot initialization
 bot = Bot(
     name="bot",
     bot_token=BOT_TOKEN,
     api_id=API_ID,
     api_hash=API_HASH,
-    storage=CustomMongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="bot_sessions"),
 )
 
 ubot = Ubot(
     name="ubot",
-    storage=CustomMongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="ubot_sessions"),
 )
 
 from DanteUserbot.core.database import *
