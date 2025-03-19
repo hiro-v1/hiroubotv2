@@ -10,7 +10,7 @@ from pyrogram.raw.functions import Ping
 from pytgcalls import __version__ as pytg
 from pyrogram import __version__ as pyr
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
+from DanteUserbot.core.helpers.client import *
 from DanteUserbot import *
 
 START_TIME = datetime.utcnow()
