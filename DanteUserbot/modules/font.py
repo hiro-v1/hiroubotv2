@@ -36,7 +36,6 @@ async def font_message(client, message):
 
 
 @DANTE.INLINE("^get_font")
-@INLINE.QUERY
 async def font_inline(client, inline_query):
     get_id = int(inline_query.query.split(None, 1)[1])
     buttons = InlineKeyboard(row_width=3)
@@ -65,7 +64,7 @@ async def font_inline(client, inline_query):
 
 
 @DANTE.CALLBACK("^get")
-@INLINE.DATA
+@DANTE.INLINE("^get")
 async def font_callback(client, callback_query):
     try:
         q = int(callback_query.data.split()[1])
@@ -82,7 +81,7 @@ async def font_callback(client, callback_query):
 
 
 @DANTE.CALLBACK("^next")
-@INLINE.DATA
+@DANTE.INLINE("^next")
 async def font_next(client, callback_query):
     try:
         get_id = int(callback_query.data.split()[1])
@@ -101,7 +100,7 @@ async def font_next(client, callback_query):
         return await callback_query.answer(f"❌ Error: {error}", True)
 
 @DANTE.CALLBACK("^prev")
-@INLINE.DATA
+@DANTE.INLINE("^prev")
 async def font_prev(client, callback_query):
     try:
         get_id = int(callback_query.data.split()[1])
