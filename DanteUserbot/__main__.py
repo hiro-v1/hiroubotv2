@@ -2,7 +2,7 @@ import asyncio
 
 from pyrogram import idle
 import os
-from HiroUserbot import *
+from DanteUserbot import *
 from pyrogram import Client
 from atexit import register
 
