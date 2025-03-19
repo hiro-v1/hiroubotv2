@@ -150,7 +150,6 @@ async def _(client, message):
 
 
 @DANTE.INLINE("^ubah_bahasa")
-@INLINE.QUERY
 async def _(client, inline_query):
     await ubah_bahasa_inline(client, inline_query)
 
@@ -160,6 +159,6 @@ async def _(client, message):
 
 
 @DANTE.CALLBACK("^set_bahasa")
-@INLINE.DATA
+@DANTE.INLINE
 async def _(client, callback_query):
     await set_bahasa_callback(client, callback_query)
