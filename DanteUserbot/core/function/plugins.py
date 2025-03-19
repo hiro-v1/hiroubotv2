@@ -15,6 +15,10 @@ HELP_COMMANDS = {}
 async def loadPlugins():
     modules = loadModule()
     
+    # Ensure bot is started
+    if not bot.is_connected:
+        await bot.start()
+    
     # Ensure bot.me is initialized
     if bot.me is None:
         bot.me = await bot.get_me()
