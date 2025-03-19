@@ -6,9 +6,7 @@ from pytz import timezone
 
 from DanteUserbot import bot, ubot
 from DanteUserbot.config import LOGS_MAKER_UBOT
-from DanteUserbot.core.database import (get_chat, get_expired_date,
-                                    rem_expired_date, remove_chat, remove_ubot,
-                                    rm_all)
+from DanteUserbot.core.database import rem_expired_date, remove_ubot, rm_all
 from DanteUserbot.core.helpers import MSG, Button
 
 
@@ -16,6 +14,7 @@ async def expiredUserbots():
     while True:
         for X in ubot._ubot:
             try:
+                from DanteUserbot.core.database import get_chat, get_expired_date, remove_chat
                 time = datetime.now(timezone("asia/Jakarta")).strftime("%d-%m-%Y")
                 exp = (await get_expired_date(X.me.id)).strftime("%d-%m-%Y")
                 if time == exp:
