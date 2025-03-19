@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from pyrogram import filters
-from DanteUserbot.__init__ import CustomMongoStorage  # Use CustomMongoStorage
+# Removed import of DanteUserbot.core.function to avoid circular import
 from DanteUserbot.config import MONGO_URL
 
 mongo_client = AsyncIOMotorClient(MONGO_URL)
@@ -8,6 +8,7 @@ mongodb = mongo_client.tgcals_userbot
 db = mongodb.premium
 filtersdb = db.filters
 
+# Import specific functions only when needed to avoid circular imports
 from DanteUserbot.core.database.expired import *
 from DanteUserbot.core.database.notes import *
 from DanteUserbot.core.database.premium import *
