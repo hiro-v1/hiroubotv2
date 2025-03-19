@@ -13,6 +13,7 @@ from pykeyboard import InlineKeyboard
 from pyrogram.types import (InlineKeyboardButton, InlineQueryResultArticle,
                             InputTextMessageContent)
 from DanteUserbot.core.function.emoji import emoji
+from DanteUserbot.core.helpers.client import DANTE
 
 @DANTE.UBOT("font")
 async def font_message(client, message):
