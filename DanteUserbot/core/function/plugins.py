@@ -14,6 +14,11 @@ HELP_COMMANDS = {}
 
 async def loadPlugins():
     modules = loadModule()
+    
+    # Ensure bot.me is initialized
+    if bot.me is None:
+        bot.me = await bot.get_me()
+    
     for mod in modules:
         imported_module = import_module(f"DanteUserbot.modules.{mod}")
         if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
@@ -48,5 +53,5 @@ async def loadPlugins():
 
 @DANTE.CALLBACK("0_cls")
 async def _(client, callback_query):
-    await callback_query.message.delete()
-    
+await callback_query.message.delete()
+
