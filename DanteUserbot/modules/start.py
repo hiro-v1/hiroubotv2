@@ -4,29 +4,14 @@ from datetime import datetime
 import sys
 from gc import get_objects
 from time import time
-from DanteUserbot import bot, ubot
+from HiroUserbot import bot, ubot
 from pyrogram.errors.exceptions.bad_request_400 import UserBannedInChannel
 from pyrogram.raw.functions import Ping
 from pytgcalls import __version__ as pytg
 from pyrogram import __version__ as pyr
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from DanteUserbot import *
-
-MODULE = "ᴘɪɴɢ & ꜱᴛᴀʀᴛ"
-HELP = f"""--ʙᴀɴᴛᴜᴀɴ ᴜɴᴛᴜᴋ ᴘɪɴɢ & ꜱᴛᴀʀᴛ--
-
-<blockquote>
-<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{PREFIX[0]}pong</code>
-<b>• ᴇxᴘʟᴀɴᴀᴛɪᴏɴ:</b> ᴜɴᴛᴜᴋ ᴍᴇɴɢᴜᴋᴜʀ ᴋᴇᴄᴇᴘᴀᴛᴀɴ ᴘɪɴɢ ᴅᴀʀɪ ʙᴏᴛ ᴅᴀɴ ᴍᴇɴᴀᴍᴘɪʟᴋᴀɴ ᴜᴘᴛɪᴍᴇ.
-</blockquote>
-
-<blockquote>
-<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{PREFIX[0]}start</code>
-<b>• ᴇxᴘʟᴀɴᴀᴛɪᴏɴ:</b> ᴜɴᴛᴜᴋ ᴍᴇɴᴊᴀʟᴀɴᴋᴀɴ ᴘᴇʀɪɴᴛᴀʜ ꜱᴛᴀʀᴛ, ᴍᴇɴɢɪʀɪᴍ ᴘᴇꜱᴀɴ ᴋᴇ ᴏᴡɴᴇʀ, ᴅᴀɴ ᴍᴇɴᴇᴍᴘɪʟᴋᴀɴ ʙᴜᴛᴛᴏɴ ꜱᴛᴀʀᴛ.
-</blockquote>
-
-"""
+from HiroUserbot import *
 
 START_TIME = datetime.utcnow()
 
@@ -48,58 +33,54 @@ async def _human_time_duration(seconds):
     return ", ".join(parts)
 
 async def pong(client, message):
-    try:
-        start = time()
-        current_time = datetime.utcnow()
-        pong = await message.edit("Proses...")
-        delta_ping = time() - start
-        await asyncio.sleep(0.3)
-        await pong.edit("❏◈===❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏===◈❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏◈===❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏===◈❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏◈===❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏===◈❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏===◈❏◈")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏====❏◈◈")
-        await asyncio.sleep(0.2)
-        await pong.edit("**◈ Pong!**")
-        end = datetime.now()
-        uptime_sec = (current_time - START_TIME).total_seconds()
-        uptime = await _human_time_duration(int(uptime_sec))
-        await pong.edit(
-            f"<blockquote><b>❏Userbot\n❏Pong : {delta_ping * 1000:.3f} ms\n❏Bot Uptime : {uptime} </b></blockquote>"
-        )
-    except Exception as error:
-        await message.reply(f"Error: {error}")
-
+   start = time()
+   current_time = datetime.utcnow()
+   pong = await message.edit("Proses...")
+   delta_ping = time() - start
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏◈===❏")
+   await asyncio.sleep(0.3)
+   await pong.edit("❏=◈==❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏==◈=❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏===◈❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏==◈=❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏=◈==❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏◈===❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏=◈==❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏==◈=❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏===◈❏")
+   await asyncio.sleep(0.3) 
+   await pong.edit("❏==◈=❏")
+   await asyncio.sleep(0.2) 
+   await pong.edit("❏=◈==❏")
+   await asyncio.sleep(0.2) 
+   await pong.edit("❏◈===❏")
+   await asyncio.sleep(0.2) 
+   await pong.edit("❏=◈==❏")
+   await asyncio.sleep(0.2) 
+   await pong.edit("❏==◈=❏")
+   await asyncio.sleep(0.2) 
+   await pong.edit("❏===◈❏")
+   await asyncio.sleep(0.2) 
+   await pong.edit("❏===◈❏◈")
+   await asyncio.sleep(0.2) 
+   await pong.edit("❏====❏◈◈")
+   await asyncio.sleep(0.2) 
+   await pong.edit("**◈ Pong!**")
+   end = datetime.now()
+   uptime_sec = (current_time - START_TIME).total_seconds()
+   uptime = await _human_time_duration(int(uptime_sec))
+   await pong.edit(
+       f"<blockquote><b>❏Userbot\n❏Pong : {delta_ping * 1000:.3f} ms\n❏Bot Uptime : {uptime} </b></blockquote>")
+    
 async def send_msg_to_owner(client, message):
     if message.from_user.id == OWNER_ID:
         return
@@ -138,8 +119,6 @@ async def ping_cmd(client, message):
         await message.reply_text(_ping)
     except UserBannedInChannel:
         pass
-    except Exception as error:
-        await message.reply(f"Error: {error}")
 
 async def start_cmd(client, message):
     await add_served_user(message.from_user.id)
@@ -191,31 +170,11 @@ async def start_cmd(client, message):
                 await send.edit(error)
 
 
-@DANTE.UBOT("pong")
-@DANTE.DEVS("uping")
+@HIRO.UBOT("pong")
+@HIRO.DEVS("uping")
 async def _(client, message):
     await ping_cmd(client, message)
 
-@DANTE.BOT("start")
+@HIRO.BOT("start")
 async def _(client, message):
     await start_cmd(client, message)
-
-from DanteUserbot import bot
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-@DANTE.BOT("start")
-async def start_handler(client, message):
-    buttons = [
-        [
-            InlineKeyboardButton("📚 Help", callback_data="help_back"),
-            InlineKeyboardButton("🤖 Buat Userbot", callback_data="bahan"),
-        ],
-        [
-            InlineKeyboardButton("💻 Modul", callback_data="help_back"),
-            InlineKeyboardButton("☎️ Chat", callback_data="takok"),
-        ],
-    ]
-    await message.reply(
-        f"👋 Hi {message.from_user.first_name},\n\nSelamat datang di DanteUserbot!",
-        reply_markup=InlineKeyboardMarkup(buttons),
-    )
