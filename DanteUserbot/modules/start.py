@@ -4,14 +4,14 @@ from datetime import datetime
 import sys
 from gc import get_objects
 from time import time
-from HiroUserbot import bot, ubot
+from DanteUserbot import bot, ubot
 from pyrogram.errors.exceptions.bad_request_400 import UserBannedInChannel
 from pyrogram.raw.functions import Ping
 from pytgcalls import __version__ as pytg
 from pyrogram import __version__ as pyr
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from HiroUserbot import *
+from DanteUserbot import *
 
 START_TIME = datetime.utcnow()
 
@@ -170,11 +170,11 @@ async def start_cmd(client, message):
                 await send.edit(error)
 
 
-@HIRO.UBOT("pong")
-@HIRO.DEVS("uping")
+@DANTE.UBOT("pong")
+@DANTE.DEVS("uping")
 async def _(client, message):
     await ping_cmd(client, message)
 
-@HIRO.BOT("start")
+@DANTE.BOT("start")
 async def _(client, message):
     await start_cmd(client, message)
