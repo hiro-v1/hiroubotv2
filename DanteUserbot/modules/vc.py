@@ -36,8 +36,10 @@ from pyrogram.raw.functions.messages import GetFullChat
 from pyrogram.raw.functions.phone import CreateGroupCall, DiscardGroupCall, EditGroupCallTitle
 from pyrogram.raw.types import InputGroupCall, InputPeerChannel, InputPeerChat
 from pyrogram.types import Message
-from pytgcalls.exceptions import *
-from pytgcalls.types.calls import Call
+from pytgcalls.exceptions import PytgcallsError
+from pytgcalls.group_call_factory import GroupCallFactory
+from pytgcalls.implementation.group_call_file import GroupCallFileAction
+from pytgcalls.implementation.group_call import GroupCallAction
 from DanteUserbot import *
 
 async def get_group_call(
