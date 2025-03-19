@@ -243,14 +243,21 @@ class Ubot(Client):
         self._translate[self.me.id] = "id"
         print(f"[𝐈𝐍𝐅𝐎] - ({self.me.id}) - 𝐒𝐓𝐀𝐑𝐓𝐄𝐃")
 
+from pyrogram.storage import MongoStorage
+
+# Configure bot to use MongoDB for session storage
 bot = Bot(
     name="bot",
     bot_token=BOT_TOKEN,
     api_id=API_ID,
     api_hash=API_HASH,
+    storage=MongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="bot_sessions"),
 )
 
-ubot = Ubot(name="ubot")
+ubot = Ubot(
+    name="ubot",
+    storage=MongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="ubot_sessions"),
+)
 
 from DanteUserbot.core.database import *
 from DanteUserbot.core.function import *
