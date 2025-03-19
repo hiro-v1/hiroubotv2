@@ -55,16 +55,10 @@ async def start_ubot(user_id, _ubot):
 
 # Fungsi utama untuk menjalankan semua userbot
 async def main():
-    await hapus_session_kadaluarsa()  # Clean up SQLite session files
-
-    userbots = await get_DanteUserbots()
-    tasks = [asyncio.shield(start_ubot(int(bot["name"]), bot)) for bot in userbots]
-
-    # Start the bot client before loading plugins
-    await bot.start()
-
-    # Start userbots and other tasks
-    await asyncio.gather(*tasks, loadPlugins(), expiredUserbots(), idle())
+    print("[LOG] Memulai bot...")
+    await bot.start()  # Pastikan bot dijalankan
+    print("[LOG] Bot berhasil dijalankan.")
+    await idle()  # Menunggu event
 
 if __name__ == "__main__":
-    asyncio.run(main())  # Menggunakan asyncio.run() untuk stabilitas lebih baik
+    asyncio.run(main())
