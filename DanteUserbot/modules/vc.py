@@ -25,12 +25,12 @@ __HELP__ = """
 
 
 from asyncio import sleep
-from pytgcalls import PyTgCalls
 from contextlib import suppress
 from random import randint
 from typing import Optional
 
 from pyrogram import Client, enums
+from pytgcalls import GroupCallFactory
 from pytgcalls.types import MediaStream
 from pyrogram.raw.functions.channels import GetFullChannel
 from pyrogram.raw.functions.messages import GetFullChat
@@ -94,6 +94,13 @@ def get_participants_list(chat_id):
     return f"{participants}\n\n<b>Total pengguna:</b> {total_participants}"
 
 
+group_call_factory = GroupCallFactory(
+    client,
+    GroupCallFactory.MTPROTO_CLIENT_TYPE.PYROGRAM,
+    enable_logs_to_console=True
+)
+client.call_py = group_call_factory.get_file_group_call()
+
 @DANTE.UBOT("startvc")
 async def opengc(client: Client, message: Message):
     bee = await eor(message, "`Processing....`")
@@ -137,38 +144,28 @@ async def joinvc(client, message):
     bee = await eor(message, "<code>Processing....</code>")
     chat_id = message.command[1] if len(message.command) > 1 else message.chat.id
     chat_id = int(chat_id)
-    calls = await client.call_py.calls
-    chat_call = calls.get(chat_id)
-    if chat_call == None:
-        try:
-            await client.call_py.play(chat_id)
-        except Exception as e:
-            return await bee.edit(f"ERROR: {e}")
+    try:
+        await client.call_py.join(chat_id)
         await bee.edit(
             f"❏ <b>Berhasil Join Voice Chat</b>\n└ <b>Chat :</b><code>{message.chat.title}</code>"
         )
         await sleep(1)
         await bee.delete()
-    else:
-        return await bee.edit("<b>Akun Kamu Sudah Berada Di Atas</b>")
+    except Exception as e:
+        await bee.edit(f"ERROR: {e}")
 
 @DANTE.UBOT("lvc")
 async def leavevc(client, message):
     bee = await eor(message, "<code>Processing....</code>")
     chat_id = message.command[1] if len(message.command) > 1 else message.chat.id
     chat_id = int(chat_id)
-    calls = await client.call_py.calls
-    chat_call = calls.get(chat_id)
-    if chat_call == None:
-        return await bee.edit("<b>Kamu Belum Bergabung Ke Voice Chat</b>")
-    else:
-        try:
-            await client.call_py.leave_call(chat_id)
-            await bee.edit(f"**❏ Berhasil Meninggalkan Voice Chat <emoji id=5798623990436074786>✅</emoji>**\n")
-            await sleep(1)
-            await bee.delete()
-        except Exception as e:
-            return await message.reply_text(e)
+    try:
+        await client.call_py.leave(chat_id)
+        await bee.edit(f"**❏ Berhasil Meninggalkan Voice Chat <emoji id=5798623990436074786>✅</emoji>**\n")
+        await sleep(1)
+        await bee.delete()
+    except Exception as e:
+        await message.reply_text(e)
 
 @DANTE.UBOT("title")
 async def vctittle(client, message):
