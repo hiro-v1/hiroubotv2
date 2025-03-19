@@ -286,11 +286,12 @@ class CustomMongoStorage(BaseStorage):
         await self.collection.delete_many({})
 
 # Remove the storage argument from Bot and Ubot initialization
-bot = Bot(
-    name="bot",
-    bot_token=BOT_TOKEN,
-    api_id=API_ID,
-    api_hash=API_HASH,
+bot = Client(
+    "DanteUserbot",
+    api_id=API_ID,  # Replace with your API ID
+    api_hash=API_HASH,  # Replace with your API Hash
+    bot_token=BOT_TOKEN,  # Replace with your Bot Token
+    storage=MongoStorage(uri=MONGO_URL, database="pyrogram_sessions")  # Use MongoDB for session storage
 )
 
 ubot = Ubot(
