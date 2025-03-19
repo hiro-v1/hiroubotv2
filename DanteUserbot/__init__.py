@@ -243,20 +243,46 @@ class Ubot(Client):
         self._translate[self.me.id] = "id"
         print(f"[𝐈𝐍𝐅𝐎] - ({self.me.id}) - 𝐒𝐓𝐀𝐑𝐓𝐄𝐃")
 
-from pyrogram.storage import MongoStorage
+from motor.motor_asyncio import AsyncIOMotorClient
 
-# Configure bot to use MongoDB for session storage
+class CustomMongoStorage(Storage):
+    def __init__(self, uri, database, collection):
+        self.client = AsyncIOMotorClient(uri)
+        self.collection = self.client[database][collection]
+
+    async def open(self):
+        pass  # No initialization needed for MongoDB
+
+    async def close(self):
+        self.client.close()
+
+    async def save(self, key, value):
+        await self.collection.update_one(
+            {"_id": key}, {"$set": {"value": value}}, upsert=True
+        )
+
+    async def load(self, key):
+        document = await self.collection.find_one({"_id": key})
+        return document["value"] if document else None
+
+    async def delete(self, key):
+        await self.collection.delete_one({"_id": key})
+
+    async def clear(self):
+        await self.collection.delete_many({})
+
+# Configure bot to use custom MongoDB session storage
 bot = Bot(
     name="bot",
     bot_token=BOT_TOKEN,
     api_id=API_ID,
     api_hash=API_HASH,
-    storage=MongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="bot_sessions"),
+    storage=CustomMongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="bot_sessions"),
 )
 
 ubot = Ubot(
     name="ubot",
-    storage=MongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="ubot_sessions"),
+    storage=CustomMongoStorage(uri=MONGO_URL, database="pyrogram_sessions", collection="ubot_sessions"),
 )
 
 from DanteUserbot.core.database import *
