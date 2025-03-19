@@ -1,7 +1,7 @@
 from DanteUserbot import *
 import asyncio
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from DanteUserbot.core.helpers.client import bot, OWNER_ID, Button, MSG, DANTE
+from DanteUserbot.core.helpers.client import bot, OWNER_ID, MSG, DANTE
 
 SUPPORT = []
 SUPPORT_LOCK = asyncio.Lock()  # Lock untuk mencegah race condition
