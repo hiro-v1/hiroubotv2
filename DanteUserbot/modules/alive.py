@@ -11,8 +11,8 @@ from pyrogram.raw.functions import Ping
 from pyrogram.types import (InlineKeyboardMarkup, InlineQueryResultArticle,
                             InputTextMessageContent, InlineKeyboardButton)
 from DanteUserbot.core.helpers.unpack import unpackInlineMessage
-from DanteUserbot.core.helpers.client import DANTE 
-
+from DanteUserbot.core.helpers.client import DANTE  # Import DANTE to access INLINE
+from DanteUserbot.core.decorators import INLINE  # Ensure INLINE is imported from the correct module
 
 # Caching untuk menghindari pengambilan data berulang
 dialog_cache = {}
