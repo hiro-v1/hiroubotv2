@@ -2,6 +2,10 @@ from pyrogram import filters
 from pyrogram.enums import ChatType
 from DanteUserbot import *
 import re
+from pyrogram.types import InlineKeyboardButton  
+
+def Button(text, callback_data=None, url=None):
+    return InlineKeyboardButton(text=text, callback_data=callback_data, url=url)
 
 class FILTERS:
     ME = filters.me
