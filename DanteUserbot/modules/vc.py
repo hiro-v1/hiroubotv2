@@ -31,7 +31,6 @@ from typing import Optional
 
 from pyrogram import Client, enums
 from pytgcalls import GroupCallFactory
-from pytgcalls.types import MediaStream
 from pyrogram.raw.functions.channels import GetFullChannel
 from pyrogram.raw.functions.messages import GetFullChat
 from pyrogram.raw.functions.phone import CreateGroupCall, DiscardGroupCall, EditGroupCallTitle
