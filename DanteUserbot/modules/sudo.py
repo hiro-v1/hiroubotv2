@@ -19,7 +19,7 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import *
 
 from DanteUserbot import *
-from HiroUserbot.core.database.setvar import (
+from DanteUserbot.core.database.setvar import (
     get_list_from_vars,
     add_to_vars,
     remove_from_vars
