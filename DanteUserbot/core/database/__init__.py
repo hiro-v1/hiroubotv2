@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from pyrogram import filters
-from pyrogram.storage import MongoStorage  # Import MongoStorage
+from DanteUserbot.__init__ import CustomMongoStorage  # Use CustomMongoStorage
 from DanteUserbot.config import MONGO_URL
 
 mongo_client = AsyncIOMotorClient(MONGO_URL)
