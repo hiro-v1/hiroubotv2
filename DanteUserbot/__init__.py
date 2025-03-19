@@ -243,18 +243,32 @@ class Ubot(Client):
         self._translate[self.me.id] = "id"
         print(f"[𝐈𝐍𝐅𝐎] - ({self.me.id}) - 𝐒𝐓𝐀𝐑𝐓𝐄𝐃")
 
+# Define a base class for CustomMongoStorage
+class BaseStorage:
+    async def open(self):
+        pass
+
+    async def close(self):
+        pass
+
+    async def save(self, key, value):
+        raise NotImplementedError
+
+    async def load(self, key):
+        raise NotImplementedError
+
+    async def delete(self, key):
+        raise NotImplementedError
+
+    async def clear(self):
+        raise NotImplementedError
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
-class CustomMongoStorage(Storage):
+class CustomMongoStorage(BaseStorage):
     def __init__(self, uri, database, collection):
         self.client = AsyncIOMotorClient(uri)
         self.collection = self.client[database][collection]
-
-    async def open(self):
-        pass  # No initialization needed for MongoDB
-
-    async def close(self):
-        self.client.close()
 
     async def save(self, key, value):
         await self.collection.update_one(
