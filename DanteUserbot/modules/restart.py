@@ -5,9 +5,8 @@ from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pytz import timezone
 
-# Add missing imports
 from DanteUserbot.core.helpers import Ubot, loadModule, set_expired_date, add_ubot, get_DanteUserbots
-from DanteUserbot.core.helpers.client import DANTE
+from DanteUserbot.core.helpers.client import DANTE, FILTERS
 
 @DANTE.BOT("login", FILTERS.OWNER)
 @DANTE.UBOT("login")
