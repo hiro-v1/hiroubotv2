@@ -205,6 +205,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 @DANTE.BOT("start")
 async def start_handler(client, message):
+    print(f"[LOG] Perintah /start diterima dari {message.from_user.id}")  # Tambahkan log
     buttons = [
         [
             InlineKeyboardButton("📚 Modul", callback_data="help_back"),
