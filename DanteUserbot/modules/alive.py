@@ -34,7 +34,7 @@ async def get_dialog_counts(bot_id, client):
     return users, groups
 
 @DANTE.CALLBACK("sys_stats")
-@INLINE.DATA
+@DANTE.INLINE("sys_stats")
 async def _sys_callback(client, cq):
     """Menampilkan statistik sistem saat tombol 'stats' ditekan."""
     text = sys_stats()
