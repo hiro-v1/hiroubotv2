@@ -28,7 +28,6 @@ async def _(client, message):
     await message.reply_to_message.reply_inline_bot_result(x.query_id, x.results[0].id)
 
 @DANTE.INLINE("^secret")
-@INLINE.QUERY
 async def _(client, q):
     try:
         m = [obj for obj in get_objects() if id(obj) == int(q.query.split()[1])][0]
