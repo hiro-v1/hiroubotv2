@@ -28,7 +28,6 @@ async def help_cmd(client, message):
             )
 
 @DANTE.INLINE("^user_help")
-@DANTE.INLINE()
 async def menu_inline(client, inline_query):
     SH = await ubot.get_prefix(inline_query.from_user.id)
     msg = f"<blockquote><b>❏ Help\n├ Owner: <a href=tg://user?id={inline_query.from_user.id}>{inline_query.from_user.first_name} {inline_query.from_user.last_name or ''}</a>\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b></blockquote>"
