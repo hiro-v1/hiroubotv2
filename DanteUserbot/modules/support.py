@@ -129,9 +129,16 @@ async def batal_callback(client, callback_query):
     return await bot.send_message(user_id, "✅ Permintaan support telah dibatalkan.")
 
 # Handler Callback Query
-@DANTE.CALLBACK("^support")
-async def _(client, callback_query):
-    await support_callback(client, callback_query)
+@DANTE.CALLBACK("support")
+async def support_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    await callback_query.edit_message_text(
+        f"📩 Halo {callback_query.from_user.first_name},\n\n"
+        f"Silakan kirim pertanyaan Anda, tim kami akan segera membantu Anda.",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("🔙 Kembali", callback_data=f"home {user_id}")]]
+        ),
+    )
 
 @DANTE.CALLBACK("^jawab_pesan")
 async def _(client, callback_query):
