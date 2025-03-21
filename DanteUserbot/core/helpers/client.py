@@ -74,18 +74,13 @@ class DANTE:
         
     def BOT(command, filter=FILTERS.PRIVATE):
         def wrapper(func):
-             message_filters = filters.command(command, prefixes=["/"])
-             if filter:
-                message_filters &= filter  # Gunakan & untuk menggabungkan command dengan filter lainnya
+            @bot.on_message(filters.command(command) & filter)
+            async def wrapped_func(client, message):
+                await func(client, message)
 
-        @bot.on_message(message_filters)
-        async def wrapped_func(client, message):
-            await func(client, message)
-        
-        return wrapped_func
+            return wrapped_func
 
-    return wrapper
-
+        return wrapper
         
     def OWNER(func):
         async def function(client, message):
@@ -265,7 +260,7 @@ class DANTE:
 
             return wrapped_func
 
-        return wrapper
+        return wrapper  # Correctly indented
 
     def CALLBACK(command):
         def wrapper(func):
@@ -275,4 +270,4 @@ class DANTE:
 
             return wrapped_func
 
-        return wrapper
+        return wrapper  # Correctly indented
