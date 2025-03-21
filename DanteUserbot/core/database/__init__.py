@@ -24,3 +24,4 @@ from DanteUserbot.core.database.bcast import *
 from DanteUserbot.core.database.permit import *
 from DanteUserbot.core.database.filters import *
 from DanteUserbot.core.database.expired import get_chat, get_expired_date, remove_chat
+from DanteUserbot.core.database.trial import is_trial_used, mark_trial_used
