@@ -130,33 +130,17 @@ async def batal_callback(client, callback_query):
 
 # Handler Callback Query
 @DANTE.CALLBACK("support")
-async def support_callback(client, callback_query):
-    user_id = callback_query.from_user.id
-    await callback_query.edit_message_text(
-        f"📩 Halo {callback_query.from_user.first_name},\n\n"
-        f"Silakan kirim pertanyaan Anda, tim kami akan segera membantu Anda.",
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("🔙 Kembali", callback_data=f"home {user_id}")]]
-        ),
-    )
+async def support_callback_handler(client, callback_query):
+    await support_callback(client, callback_query)
 
 @DANTE.CALLBACK("^jawab_pesan")
-async def _(client, callback_query):
+async def jawab_pesan_callback_handler(client, callback_query):
     await jawab_pesan_callback(client, callback_query)
 
 @DANTE.CALLBACK("^profil")
-async def _(client, callback_query):
+async def profil_callback_handler(client, callback_query):
     await profil_callback(client, callback_query)
 
 @DANTE.CALLBACK("^batal")
-async def _(client, callback_query):
+async def batal_callback_handler(client, callback_query):
     await batal_callback(client, callback_query)
-
-@DANTE.CALLBACK("hubungi_owner")
-async def _(client, callback_query):
-    buttons = [[InlineKeyboardButton("🔙 Kembali", callback_data="start")]]
-    await callback_query.edit_message_text(
-        f"📩 Halo {callback_query.from_user.first_name},\n\n"
-        f"Silakan hubungi owner untuk bantuan lebih lanjut.",
-        reply_markup=InlineKeyboardMarkup(buttons),
-    )
