@@ -611,3 +611,16 @@ async def coba_callback(client, callback_query):
 
     # Beri notifikasi sukses
     await callback_query.answer("🎉 Anda telah mencoba gratis 1 hari!", show_alert=True)
+
+@DANTE.CALLBACK("coba_gratis")
+async def _(client, callback_query):
+    user_id = callback_query.from_user.id
+    if await is_trial_used(user_id):
+        await callback_query.answer("❌ Anda sudah pernah mencoba gratis.", show_alert=True)
+        return
+    now = datetime.now(timezone("Asia/Jakarta"))
+    expired_date = now + timedelta(days=1)
+    await add_prem(user_id)
+    await set_expired_date(user_id, expired_date)
+    await mark_trial_used(user_id)
+    await callback_query.message.edit_text("✅ Anda telah mendapatkan akses premium selama 1 hari!")
