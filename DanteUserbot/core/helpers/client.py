@@ -106,7 +106,10 @@ class DANTE:
             filter = filters.create(if_sudo)
 
         def decorator(func):
-            # Replace `ubot.cmd_prefix(command)` with a hardcoded prefix or configurable alternative
+            # Ensure `command` is a string or list of strings
+            if not isinstance(command, (str, list)):
+                raise TypeError("The 'command' parameter must be a string or a list of strings.")
+
             command_filter = filters.command(command, prefixes=["/"])  # Adjust prefix as needed
 
             @ubot.on_message(command_filter & filter)
