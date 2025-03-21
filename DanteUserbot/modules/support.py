@@ -151,3 +151,12 @@ async def _(client, callback_query):
 @DANTE.CALLBACK("^batal")
 async def _(client, callback_query):
     await batal_callback(client, callback_query)
+
+@DANTE.CALLBACK("hubungi_owner")
+async def _(client, callback_query):
+    buttons = [[InlineKeyboardButton("🔙 Kembali", callback_data="start")]]
+    await callback_query.edit_message_text(
+        f"📩 Halo {callback_query.from_user.first_name},\n\n"
+        f"Silakan hubungi owner untuk bantuan lebih lanjut.",
+        reply_markup=InlineKeyboardMarkup(buttons),
+    )
