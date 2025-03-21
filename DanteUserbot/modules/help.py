@@ -47,7 +47,17 @@ async def menu_inline(client, inline_query):
         ],
     )
 
-
+@DANTE.CALLBACK("lihat_moduls")
+async def _(client, callback_query):
+    SH = await ubot.get_prefix(callback_query.from_user.id)
+    top_text = f"<b>❏ Moduls\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
+    await callback_query.edit_message_text(
+        text=top_text,
+        reply_markup=InlineKeyboardMarkup(
+            paginate_modules(0, HELP_COMMANDS, "help")
+        ),
+        disable_web_page_preview=True,
+    )
 
 @DANTE.CALLBACK("help_(.*?)")
 async def menu_callback(client, callback_query):
