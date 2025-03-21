@@ -5,6 +5,7 @@ import os
 from DanteUserbot import *
 from pyrogram import Client
 from atexit import register
+from DanteUserbot.core.helper.tools import *
 
 async def start_ubot(user_id, _ubot):
     ubot_ = Ubot(**_ubot)
@@ -29,8 +30,6 @@ async def start_ubot(user_id, _ubot):
         for X in await get_chat(user_id):
             await remove_chat(user_id, X)
         print(f"✅ {user_id} 𝗕𝗘𝗥𝗛𝗔𝗦𝗜𝗟 𝗗𝗜𝗛𝗔𝗣𝗨𝗦")
-
-
 
 async def main():
     await bash("rm -rf *session*")
