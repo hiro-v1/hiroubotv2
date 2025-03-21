@@ -7,8 +7,10 @@ from pyrogram.raw.functions import Ping
 from pyrogram.types import (
     InlineKeyboardMarkup, 
     InlineQueryResultArticle,
-    InputTextMessageContent
+    InputTextMessageContent,
+    InlineKeyboardButton,
 )
+from DanteUserbot.core.helpers.client import DANTE
 
 @DANTE.UBOT("getubot")
 @DANTE.OWNER
@@ -21,17 +23,16 @@ async def getubot_cmd(client, message):
 
     try:
         x = await client.get_inline_bot_results(bot.me.username, "ambil_ubot")
-        
         if not x.results:
             return await msg.edit("❌ Tidak ada hasil yang ditemukan.")
 
         await message.reply_inline_bot_result(
-            x.query_id, 
-            x.results[0].id, 
-            quote=True
+            x.query_id,
+            x.results[0].id,
+            quote=True,
         )
         await msg.delete()
-    
+
     except Exception as error:
         await msg.edit(f"⚠️ Terjadi kesalahan:\n<code>{error}</code>")
 
@@ -41,16 +42,13 @@ async def getubot_query(client, inline_query):
     try:
         msg = "💬 Ambil akun userbot."
         userbot_id = ubot._ubot[0].me.id if ubot._ubot else 0
-        
-        # Pastikan Button.ambil_akun sudah dideklarasikan sebelumnya
-        if not hasattr(Button, "ambil_akun"):
-            return await client.answer_inline_query(
-                inline_query.id,
-                cache_time=0,
-                results=[],
-                switch_pm_text="⚠️ Tombol ambil akun tidak tersedia.",
-                switch_pm_parameter="help"
-            )
+
+        buttons = [
+            [
+                InlineKeyboardButton("🔙 Kembali", callback_data="start"),
+                InlineKeyboardButton("❌ Tutup", callback_data="cl_close"),
+            ]
+        ]
 
         await client.answer_inline_query(
             inline_query.id,
@@ -58,9 +56,7 @@ async def getubot_query(client, inline_query):
             results=[
                 InlineQueryResultArticle(
                     title="💬 Ambil Akun",
-                    reply_markup=InlineKeyboardMarkup(
-                        Button.ambil_akun(userbot_id, 0)
-                    ),
+                    reply_markup=InlineKeyboardMarkup(buttons),
                     input_message_content=InputTextMessageContent(msg),
                 )
             ],
@@ -72,5 +68,5 @@ async def getubot_query(client, inline_query):
             cache_time=0,
             results=[],
             switch_pm_text=f"⚠️ Error: {error}",
-            switch_pm_parameter="error"
+            switch_pm_parameter="error",
         )
