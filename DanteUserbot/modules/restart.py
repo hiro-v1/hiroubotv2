@@ -11,7 +11,7 @@ from DanteUserbot.core.helpers.client import DANTE, FILTERS
 @DANTE.BOT("login", FILTERS.OWNER)
 @DANTE.UBOT("login")
 @DANTE.OWNER
-async def _(client, message):
+async def login_userbot(client, message):
     info = await message.reply("<b>tunggu sebentar...</b>", quote=True)
     if len(message.command) < 3:
         return await info.edit(
@@ -27,14 +27,14 @@ async def _(client, message):
         await ub.start()
         for mod in loadModule():
             importlib.reload(importlib.import_module(f"DanteUserbot.modules.{mod}"))
-        now = datetime.now(timezone("asia/Jakarta"))
+        now = datetime.now(timezone("Asia/Jakarta"))
         expire_date = now + timedelta(days=int(message.command[1]))
         await set_expired_date(ub.me.id, expire_date)
         await add_ubot(
             user_id=int(ub.me.id),
             api_id=API_ID,
             api_hash=API_HASH,
-            session_string=message.command[2],  # Fix the session_string parameter
+            session_string=message.command[2],  # Fix parameter session_string
         )
         buttons = [
             [
@@ -60,9 +60,8 @@ async def _(client, message):
     except Exception as error:
         return await info.edit(f"<code>{error}</code>")
 
-    
 @DANTE.BOT("restart")
-async def _(client, message):
+async def restart_userbot(client, message):
     msg = await message.reply("<b>tunggu sebentar</b>", quote=True)
     if message.from_user.id not in ubot._get_my_id:
         return await msg.edit(
@@ -86,3 +85,27 @@ async def _(client, message):
                         )
                     except Exception as error:
                         return await msg.edit(f"<b>{error}</b>")
+
+@DANTE.CALLBACK("cek_masa_aktif")
+async def cek_masa_aktif_callback(client, callback_query):
+    user_id = int(callback_query.data.split()[1])
+    expired_date = await get_expired_date(user_id)
+    if expired_date:
+        remaining_days = (expired_date - datetime.now(timezone("Asia/Jakarta"))).days
+        await callback_query.answer(f"⏳ Masa aktif tersisa: {remaining_days} hari.", show_alert=True)
+    else:
+        await callback_query.answer("✅ Userbot sudah tidak aktif.", show_alert=True)
+
+@DANTE.CALLBACK("restart_all")
+async def restart_all_userbots(client, callback_query):
+    """Restart semua userbot yang sedang berjalan."""
+    await callback_query.answer("⏳ Memulai ulang semua userbot...", show_alert=True)
+    for X in ubot._ubot:
+        try:
+            ubot._ubot.remove(X)
+            ubot._get_my_id.remove(X.me.id)
+            await X.stop()
+            await X.start()
+        except Exception as error:
+            print(f"⚠️ Gagal restart userbot {X.me.id}: {error}")
+    await callback_query.message.edit_text("✅ Semua userbot berhasil di-restart.")
