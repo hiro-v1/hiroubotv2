@@ -200,11 +200,12 @@ async def _(client, message):
 async def _(client, message):
     await start_cmd(client, message)
 
-from DanteUserbot import bot
+from DanteUserbot import *
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 @DANTE.BOT("start")
 async def start_handler(client, message):
+    print("[LOG] Handler /start dipanggil.")  # Tambahkan log untuk debugging
     buttons = [
         [
             InlineKeyboardButton("🎁 Coba Gratis", callback_data="coba_gratis"),
@@ -217,6 +218,6 @@ async def start_handler(client, message):
     ]
     await message.reply(
         f"👋 Halo {message.from_user.first_name}!\n\n"
-        f"Selamat datang di Hirov2Userbot. Pilih salah satu menu di bawah ini untuk melanjutkan.",
+        f"Selamat datang di DanteUserbot. Pilih salah satu menu di bawah ini untuk melanjutkan.",
         reply_markup=InlineKeyboardMarkup(buttons),
     )
