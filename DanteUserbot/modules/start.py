@@ -11,7 +11,8 @@ from pytgcalls import __version__ as pytg
 from pyrogram import __version__ as pyr
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from DanteUserbot import *
+from DanteUserbot.core.database import *
+from DanteUserbot.core.helpers import *
 
 MODULE = "ᴘɪɴɢ & ꜱᴛᴀʀᴛ"
 HELP = f"""--ʙᴀɴᴛᴜᴀɴ ᴜɴᴛᴜᴋ ᴘɪɴɢ & ꜱᴛᴀʀᴛ--
