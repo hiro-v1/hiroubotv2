@@ -553,3 +553,7 @@ async def _(client, callback_query):
 """,
             reply_markup=InlineKeyboardMarkup(buttons),
         )
+
+@DANTE.CALLBACK("buat_ubot")
+async def _(client, callback_query):
+    await bikin_memek(client, callback_query)
