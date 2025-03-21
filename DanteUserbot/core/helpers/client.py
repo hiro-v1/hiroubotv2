@@ -72,15 +72,26 @@ class DANTE:
 
         return wrapper
         
-    def BOT(command, filter=FILTERS.PRIVATE):
+    def BOT(command, filter=None):
         def wrapper(func):
-            @bot.on_message(filters.command(command) & filter)
+            if not isinstance(command, (str, list)):  # Pastikan command berupa string atau list of strings
+                raise TypeError(f"Command harus string atau list of strings, bukan {type(command).__name__}")
+
+            message_filters = filters.command(command, prefixes=["/"])
+
+            if filter is not None:
+                if not isinstance(filter, filters.Filter):  # Pastikan filter adalah filter Pyrogram
+                    raise TypeError(f"Filter harus berupa Pyrogram filters, bukan {type(filter).__name__}")
+                message_filters &= filter
+
+            @bot.on_message(message_filters)
             async def wrapped_func(client, message):
                 await func(client, message)
 
             return wrapped_func
 
         return wrapper
+
         
     def OWNER(func):
         async def function(client, message):
@@ -102,23 +113,26 @@ class DANTE:
 
     @staticmethod
     def UBOT(command, filter=None):
+        if not isinstance(command, (str, list)):
+            raise TypeError(f"Command harus berupa string atau list of strings, bukan {type(command).__name__}")
+
+        command_filter = filters.command(command, prefixes=["/"])
+
         if filter is None:
-            filter = filters.create(if_sudo)
+            filter = filters.create(if_sudo)  # Pastikan hanya sudo user yang bisa menjalankan
+
+        if not isinstance(filter, filters.Filter):
+            raise TypeError(f"Filter harus berupa Pyrogram filters, bukan {type(filter).__name__}")
 
         def decorator(func):
-            # Ensure `command` is a string or list of strings
-            if not isinstance(command, (str, list)):
-                raise TypeError("The 'command' parameter must be a string or a list of strings.")
-
-            command_filter = filters.command(command, prefixes=["/"])  # Adjust prefix as needed
-
             @ubot.on_message(command_filter & filter)
             async def wrapped_func(client, message):
                 return await func(client, message)
 
             return wrapped_func
-
+ 
         return decorator
+
 
     @staticmethod
     def ME_USER(command, filter=FILTERS.ME_USER):
@@ -255,22 +269,32 @@ class DANTE:
 
         return function     
 
+    @staticmethod
     def INLINE(command):
+        if not isinstance(command, str):
+            raise TypeError("Command dalam INLINE harus berupa string.")
+
         def wrapper(func):
             @bot.on_inline_query(filters.regex(command))
-            async def wrapped_func(client, message):
-                await func(client, message)
+            async def wrapped_func(client, inline_query):
+                await func(client, inline_query)
 
             return wrapped_func
 
-        return wrapper  # Correctly indented
+        return wrapper
 
+
+    @staticmethod
     def CALLBACK(command):
+        if not isinstance(command, str):
+            raise TypeError("Command dalam CALLBACK harus berupa string.")
+
         def wrapper(func):
             @bot.on_callback_query(filters.regex(command))
-            async def wrapped_func(client, message):
-                await func(client, message)
+            async def wrapped_func(client, callback_query):
+                await func(client, callback_query)
 
             return wrapped_func
 
-        return wrapper  # Correctly indented
+        return wrapper
+
