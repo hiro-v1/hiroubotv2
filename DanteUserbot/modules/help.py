@@ -12,19 +12,18 @@ async def help_cmd(client, message):
             x = await client.get_inline_bot_results(bot.me.username, "user_help")
             await message.reply_inline_bot_result(x.query_id, x.results[0].id)
         except Exception as error:
-            await message.reply(error)
+            await message.reply(f"⚠️ Terjadi kesalahan:\n<code>{error}</code>")
     else:
         module = get_arg(message)
         if module in HELP_COMMANDS:
             await message.reply(
                 HELP_COMMANDS[module].HELP,
-                # HELP_COMMANDS[module].HELP + '\n<b><a href="tg://user?id=6496475152">©tango-userbot</a> </b>',
                 quote=True,
                 disable_web_page_preview=True,
             )
         else:
             await message.reply(
-                f"<blockquote><b>❌ tidak dapat ditemukan module dengan nama <code>{module}</code></b></blockquote>"
+                f"<blockquote><b>❌ Tidak dapat ditemukan modul dengan nama <code>{module}</code></b></blockquote>"
             )
 
 @DANTE.INLINE("^user_help")
@@ -35,20 +34,19 @@ async def menu_inline(client, inline_query):
         inline_query.id,
         cache_time=60,
         results=[
-            (
-                InlineQueryResultArticle(
-                    title="Help Menu!",
-                    reply_markup=InlineKeyboardMarkup(
-                        paginate_modules(0, HELP_COMMANDS, "help")
-                    ),
-                    input_message_content=InputTextMessageContent(msg),
-                )
+            InlineQueryResultArticle(
+                title="Help Menu!",
+                reply_markup=InlineKeyboardMarkup(
+                    paginate_modules(0, HELP_COMMANDS, "help")
+                ),
+                input_message_content=InputTextMessageContent(msg),
             )
         ],
     )
 
 @DANTE.CALLBACK("lihat_moduls")
-async def _(client, callback_query):
+async def lihat_moduls_callback(client, callback_query):
+    print("[LOG] Callback lihat_moduls dipanggil.")  # Tambahkan log untuk debugging
     SH = await ubot.get_prefix(callback_query.from_user.id)
     top_text = f"<b>❏ Moduls\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
     await callback_query.edit_message_text(
@@ -70,10 +68,9 @@ async def menu_callback(client, callback_query):
     if mod_match:
         module = (mod_match.group(1)).replace(" ", "_")
         text = HELP_COMMANDS[module].__HELP__.format(next((p) for p in SH))
-        button = [[InlineKeyboardButton(" ᴋᴇᴍʙᴀʟɪ ", callback_data="help_back")]]
+        button = [[InlineKeyboardButton("🔙 Kembali", callback_data="help_back")]]
         await callback_query.edit_message_text(
-            # text=text + '\n<b><a href="tg://user?id=6496475152">©tango-userbot</a> </b>',
-            text =text,
+            text=text,
             reply_markup=InlineKeyboardMarkup(button),
             disable_web_page_preview=True,
         )
