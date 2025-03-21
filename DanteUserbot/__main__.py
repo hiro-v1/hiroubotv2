@@ -40,25 +40,36 @@ async def start_ubot(user_id, _ubot):
     ubot_ = Ubot(**_ubot)
     try:
         await asyncio.wait_for(ubot_.start(), timeout=30)
-        print(f"[INFO] - Userbot {user_id} berhasil dijalankan.")  # Tambahkan log
+        print(f"[INFO] - Userbot {user_id} berhasil dijalankan.")
     except asyncio.TimeoutError:
         print(f"[INFO] - Userbot ({user_id}) tidak merespon, mencoba restart...")
-        try:
-            await asyncio.sleep(5)
-            await ubot_.start()
-        except Exception:
-            await bersihkan_userbot(user_id, tambahkan_premium=True)
-            print(f"[INFO] - Userbot ({user_id}) tetap gagal, menghapus data.")
+        await remove_ubot(user_id)
+        await add_prem(user_id)
+        await rm_all(user_id)
+        await rem_pref(user_id)
+        await remove_all_vars(user_id)
+        for X in await get_chat(user_id):
+            await remove_chat(user_id, X)
+        await sending_user(user_id)
     except Exception as e:
-        await bersihkan_userbot(user_id)
         print(f"⚠️ {user_id} gagal dijalankan. Error: {e}")
+        await remove_ubot(user_id)
+        await rm_all(user_id)
+        await remove_all_vars(user_id)
+        await rem_pref(user_id)
+        await rem_expired_date(user_id)
+        for X in await get_chat(user_id):
+            await remove_chat(user_id, X)
 
 # Fungsi utama untuk menjalankan semua userbot
 async def main():
     print("[LOG] Memulai bot...")
-    await bot.start()  # Pastikan bot dijalankan
-    print("[LOG] Bot berhasil dijalankan.")
-    await idle()  # Menunggu event
+    await bot.start()
+    tasks = [
+        asyncio.create_task(start_ubot(int(_ubot["name"]), _ubot))
+        for _ubot in await get_DanteUserbots()
+    ]
+    await asyncio.gather(*tasks, idle())
 
 if __name__ == "__main__":
     asyncio.run(main())
