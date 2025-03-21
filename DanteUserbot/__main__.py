@@ -5,7 +5,7 @@ import os
 from DanteUserbot import *
 from pyrogram import Client
 from atexit import register
-from DanteUserbot.core.helper.tools import *
+from DanteUserbot.core.helpers.tools import *
 
 async def start_ubot(user_id, _ubot):
     ubot_ = Ubot(**_ubot)
