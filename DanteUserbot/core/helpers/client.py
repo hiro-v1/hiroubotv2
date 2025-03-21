@@ -106,7 +106,10 @@ class DANTE:
             filter = filters.create(if_sudo)
 
         def decorator(func):
-            @ubot.on_message(ubot.cmd_prefix(command) & filter)
+            # Replace `ubot.cmd_prefix(command)` with a hardcoded prefix or configurable alternative
+            command_filter = filters.command(command, prefixes=["/"])  # Adjust prefix as needed
+
+            @ubot.on_message(command_filter & filter)
             async def wrapped_func(client, message):
                 return await func(client, message)
 
