@@ -625,3 +625,89 @@ async def _(client, callback_query):
     await set_expired_date(user_id, expired_date)
     await mark_trial_used(user_id)
     await callback_query.message.edit_text("✅ Anda telah mendapatkan akses premium selama 1 hari!")
+
+from DanteUserbot import *
+from datetime import datetime, timedelta
+from pytz import timezone
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from DanteUserbot.core.helpers.client import DANTE
+
+@DANTE.UBOT("getubot")
+@DANTE.OWNER
+async def getubot_cmd(client, message):
+    msg = await message.reply("**Tunggu sebentar...**", quote=True)
+    try:
+        x = await client.get_inline_bot_results(bot.me.username, "ambil_ubot")
+        await message.reply_inline_bot_result(x.query_id, x.results[0].id, quote=True)
+        await msg.delete()
+    except Exception as error:
+        await msg.edit(f"⚠️ Terjadi kesalahan:\n<code>{error}</code>")
+
+@DANTE.INLINE("^ambil_ubot")
+async def getubot_query(client, inline_query):
+    msg = await MSG.USERBOT(0)  # Ambil pesan userbot dari fungsi MSG
+    await client.answer_inline_query(
+        inline_query.id,
+        cache_time=0,
+        results=[
+            InlineQueryResultArticle(
+                title="💬",
+                reply_markup=InlineKeyboardMarkup(Button.ambil_akun(ubot._ubot[0].me.id, 0)),
+                input_message_content=InputTextMessageContent(msg),
+            )
+        ],
+    )
+
+@DANTE.UBOT("prem")
+async def prem_user(client, message):
+    user_id = message.from_user.id
+    if user_id not in await get_seles():
+        return await message.reply("❌ Anda tidak memiliki izin untuk menggunakan perintah ini.")
+    try:
+        target_id = int(message.command[1])
+        duration = int(message.command[2]) if len(message.command) > 2 else 1
+        now = datetime.now(timezone("Asia/Jakarta"))
+        expired_date = now + timedelta(days=duration * 30)
+        await add_prem(target_id)
+        await set_expired_date(target_id, expired_date)
+        await message.reply(f"✅ Pengguna <code>{target_id}</code> telah ditambahkan ke premium selama {duration} bulan.")
+    except Exception as e:
+        await message.reply(f"⚠️ Terjadi kesalahan:\n<code>{e}</code>")
+
+@DANTE.UBOT("unprem")
+async def unprem_user(client, message):
+    try:
+        target_id = int(message.command[1])
+        await remove_prem(target_id)
+        await rem_expired_date(target_id)
+        await message.reply(f"✅ Pengguna <code>{target_id}</code> telah dihapus dari premium.")
+    except Exception as e:
+        await message.reply(f"⚠️ Terjadi kesalahan:\n<code>{e}</code>")
+
+@DANTE.UBOT("cekprem")
+async def cek_prem_user(client, message):
+    try:
+        user_id = int(message.command[1])
+        expired_date = await get_expired_date(user_id)
+        if expired_date:
+            remaining_days = (expired_date - datetime.now(timezone("Asia/Jakarta"))).days
+            await message.reply(f"✅ Pengguna <code>{user_id}</code> memiliki sisa premium {remaining_days} hari.")
+        else:
+            await message.reply(f"❌ Pengguna <code>{user_id}</code> tidak memiliki status premium.")
+    except Exception as e:
+        await message.reply(f"⚠️ Terjadi kesalahan:\n<code>{e}</code>")
+
+@DANTE.UBOT("listprem")
+async def list_prem_users(client, message):
+    try:
+        premium_users = await get_prem()
+        if not premium_users:
+            return await message.reply("❌ Tidak ada pengguna premium.")
+        text = "✅ **Daftar Pengguna Premium:**\n"
+        for user_id in premium_users:
+            expired_date = await get_expired_date(user_id)
+            remaining_days = (expired_date - datetime.now(timezone("Asia/Jakarta"))).days if expired_date else "Tidak diketahui"
+            text += f"• <code>{user_id}</code> - Sisa {remaining_days} hari\n"
+        await message.reply(text)
+    except Exception as e:
+        await message.reply(f"⚠️ Terjadi kesalahan:\n<code>{e}</code>")
