@@ -36,7 +36,6 @@ async def if_sudo(_, client, message):
 
     return is_user.id in sudo_users or is_self
 
-
 async def list_kata(_, client, message):
     is_on = await get_status(client.me.id)
     if not is_on:
@@ -51,7 +50,6 @@ async def list_kata(_, client, message):
     return bool(re.search(pattern, message_text))
 
 class DANTE:
-    
     @staticmethod
     def MECHA():
         def decorator(func):
@@ -104,17 +102,13 @@ class DANTE:
 
     @staticmethod
     def UBOT(command, filter=None):
-        """Menangani perintah yang hanya bisa digunakan oleh Sudo."""
         if filter is None:
-            filter = filters.create(if_sudo)  # Menggunakan if_sudo yang telah diperbaiki
+            filter = filters.create(if_sudo)
 
         def decorator(func):
             @ubot.on_message(ubot.cmd_prefix(command) & filter)
             async def wrapped_func(client, message):
-                try:
-                    await func(client, message)
-                except Exception as e:
-                    print(f"⚠️ Error UBOT command {command}: {e}")  # Log error agar mudah debugging
+                return await func(client, message)
 
             return wrapped_func
 
@@ -136,20 +130,19 @@ class DANTE:
             return wrapped_func
 
         return wrapper
-
+        
     @staticmethod
     def ADMIN(func):
         """Memastikan hanya Admin/Sudo yang bisa menjalankan command."""
         async def function(client, message):
-            await ensure_owner_sudo(client.me.id)  # Pastikan Owner tetap ada
-            admin_id = await get_list_from_vars(client.me.id, "SUDO_USER", "ID_NYA")  # Ambil daftar Sudo
-
-            if message.from_user.id not in admin_id:
-                return  # Jika bukan admin, abaikan
+            user = message.from_user
+            admin_id = await get_list_from_vars(client.me.id, "SUDO_USER", "ID_NYA")
+            if user.id not in admin_id:
+                return
             return await func(client, message)
 
         return function
-
+        
     @staticmethod
     def NO_CMD_UBOT(result, ubot):
         query_mapping = {
@@ -256,52 +249,21 @@ class DANTE:
 
         return function     
 
-    @staticmethod
     def INLINE(command):
-        """Decorator for handling inline queries with an optional command filter."""
         def wrapper(func):
-            if command:
-                # Use a regex filter for the specified command
-                @bot.on_inline_query(filters.regex(command))
-                async def wrapped_func(client, message):
-                    await func(client, message)
-
-                return wrapped_func
-
-        return wrapper
-
-    @staticmethod
-    def CALLBACK(command):
-        """Decorator for handling callback queries with a regex filter."""
-        def wrapper(func):
-            @bot.on_callback_query(filters.regex(command))
-            async def wrapped_func(client, callback_query):
-                print(f"[LOG] Callback {command} dipanggil oleh {callback_query.from_user.id}")  # Tambahkan log
-                try:
-                    await func(client, callback_query)
-                except Exception as e:
-                    print(f"⚠️ Error CALLBACK {command}: {e}")  # Log error untuk debugging
+            @bot.on_inline_query(filters.regex(command))
+            async def wrapped_func(client, message):
+                await func(client, message)
 
             return wrapped_func
 
         return wrapper
 
-    @staticmethod
-    def SUDO(command):
-        """Handles commands that can only be used by Sudo Users."""
-        async def is_sudo(_, client, message):
-            """Ensure Owner remains in the Sudo list and check permissions."""
-            await ensure_owner_sudo(client.me.id)
-            sudo_users = await get_list_from_vars(client.me.id, "SUDO_USER")
-            return message.from_user.id in sudo_users
-
+    def CALLBACK(command):
         def wrapper(func):
-            @ubot.on_message(filters.create(is_sudo) & filters.command(command))
+            @bot.on_callback_query(filters.regex(command))
             async def wrapped_func(client, message):
-                try:
-                    await func(client, message)
-                except Exception as e:
-                    print(f"⚠️ Error SUDO command {command}: {e}")
+                await func(client, message)
 
             return wrapped_func
 
