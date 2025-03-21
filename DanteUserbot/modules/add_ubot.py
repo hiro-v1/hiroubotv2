@@ -556,4 +556,5 @@ async def _(client, callback_query):
 
 @DANTE.CALLBACK("buat_ubot")
 async def _(client, callback_query):
+    print("[LOG] Callback buat_ubot dipanggil.")  # Tambahkan log untuk debugging
     await bikin_memek(client, callback_query)
