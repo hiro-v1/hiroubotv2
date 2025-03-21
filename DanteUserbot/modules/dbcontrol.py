@@ -614,6 +614,7 @@ async def coba_callback(client, callback_query):
 
 @DANTE.CALLBACK("coba_gratis")
 async def _(client, callback_query):
+    print("[LOG] Callback coba_gratis dipanggil.")  # Tambahkan log untuk debugging
     user_id = callback_query.from_user.id
     if await is_trial_used(user_id):
         await callback_query.answer("❌ Anda sudah pernah mencoba gratis.", show_alert=True)
