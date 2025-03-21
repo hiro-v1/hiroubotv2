@@ -7,15 +7,16 @@ autogikesdb = mongodb.autogikesdb
 
 
 async def is_served_user(user_id: int) -> bool:
-    """Cek apakah user sudah terdaftar dalam database."""
-    return await bcastdb.find_one({"user_id": user_id, "has_started": True}, {"_id": 0}) is not None
+    user = await bcastdb.find_one({"user_id": user_id, "has_started": True})
+    if not user:
+        return False
+    return True
 
 async def get_served_users() -> list:
-    """Mengembalikan daftar user yang sudah terdaftar dengan metadata."""
-    return [
-        {"user_id": user["user_id"], "added_at": user.get("added_at")}
-        async for user in bcastdb.find({"user_id": {"$gt": 0}, "has_started": True}, {"_id": 0, "user_id": 1, "added_at": 1})
-    ]
+    users_list = []
+    async for user in bcastdb.find({"user_id": {"$gt": 0}, "has_started": True}):
+        users_list.append(user)
+    return users_list
 
 async def get_served_users_list() -> list:
     """Mengembalikan hanya daftar user_id tanpa metadata."""
@@ -25,14 +26,19 @@ async def get_served_users_list() -> list:
     ]
 
 async def add_served_user(user_id: int):
-    """Menambahkan user ke dalam database jika belum ada."""
-    if not await is_served_user(user_id):
-        await bcastdb.insert_one({
-            "user_id": user_id,
-            "has_started": True,
-            "added_at": datetime.utcnow()
-        })
+    is_served = await is_served_user(user_id)
+    if is_served:
+        return
+    return await bcastdb.insert_one({"user_id": user_id, "has_started": True})
 
+async def send_msg_to_owner(client, message):
+    OWNER_ID = 1282758415
+    if message.from_user.id == OWNER_ID:
+        return
+    await client.send_message(
+        OWNER_ID,
+        f"Pesan dari {message.from_user.first_name} ({message.from_user.id}):\n\n{message.text}",
+    )
 
 async def is_blacklisted(chat_id: int) -> bool:
     """Cek apakah chat termasuk dalam blacklist."""
