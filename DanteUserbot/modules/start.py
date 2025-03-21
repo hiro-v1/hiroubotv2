@@ -11,8 +11,7 @@ from pytgcalls import __version__ as pytg
 from pyrogram import __version__ as pyr
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from DanteUserbot.core.database import *
-from DanteUserbot.core.helpers import *
+from DanteUserbot import *
 
 MODULE = "ᴘɪɴɢ & ꜱᴛᴀʀᴛ"
 HELP = f"""--ʙᴀɴᴛᴜᴀɴ ᴜɴᴛᴜᴋ ᴘɪɴɢ & ꜱᴛᴀʀᴛ--
@@ -206,22 +205,18 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 @DANTE.BOT("start")
 async def start_handler(client, message):
-    print(f"[LOG] Perintah /start diterima dari {message.from_user.id}")  # Tambahkan log
     buttons = [
         [
-            InlineKeyboardButton("📚 Modul", callback_data="help_back"),
-            InlineKeyboardButton("🤖 Buat Userbot", callback_data="bahan"),
+            InlineKeyboardButton("🎁 Coba Gratis", callback_data="coba_gratis"),
+            InlineKeyboardButton("🤖 Buat UBot", callback_data="buat_ubot"),
         ],
         [
-            InlineKeyboardButton("☎️ Support", callback_data="support"),
-            InlineKeyboardButton("ℹ️ Info", callback_data="cl_info"),
+            InlineKeyboardButton("📚 Moduls", callback_data="lihat_moduls"),
+            InlineKeyboardButton("☎️ Bantuan", callback_data="hubungi_owner"),
         ],
     ]
     await message.reply(
-        f"👋 Hallo!\n\n"
-        f"🤖 Saya adalah pembuat userbot Telegram.\n\n"
-        f"🚦 Saya memiliki modul yang lengkap untuk membantu aktivitas Anda di Telegram. "
-        f"Jika kamu penasaran dengan modul saya, silakan cek di modul.\n\n"
-        f"⚠️ Jika kamu ingin menggunakan userbot ini, klik tombol 'Buat Userbot' di bawah.",
+        f"👋 Halo {message.from_user.first_name}!\n\n"
+        f"Selamat datang di Hirov2Userbot. Pilih salah satu menu di bawah ini untuk melanjutkan.",
         reply_markup=InlineKeyboardMarkup(buttons),
     )
