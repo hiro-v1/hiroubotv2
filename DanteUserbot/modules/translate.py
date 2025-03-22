@@ -99,44 +99,39 @@ async def set_lang_cmd(client, message):
 
 
 async def ubah_bahasa_inline(client, inline_query):
+    """Handle inline query for changing language."""
     buttons = InlineKeyboard(row_width=3)
-    keyboard = []
-    for X in lang_code_translate:
-        keyboard.append(
-            InlineKeyboardButton(
-                Fonts.smallcap(X.lower()),
-                callback_data=f"set_bahasa {int(inline_query.query.split()[1])} {X}",
-            )
+    keyboard = [
+        InlineKeyboardButton(
+            Fonts.smallcap(lang.lower()),
+            callback_data=f"set_bahasa {inline_query.from_user.id} {lang}",
         )
+        for lang in lang_code_translate
+    ]
     buttons.add(*keyboard)
     await client.answer_inline_query(
         inline_query.id,
         cache_time=0,
         results=[
-            (
-                InlineQueryResultArticle(
-                    title="get bahasa!",
-                    reply_markup=buttons,
-                    input_message_content=InputTextMessageContent(
-                        "<b>sɪʟᴀʜᴋᴀɴ ᴘɪʟɪʜ ʙᴀʜᴀsᴀ ᴛʀᴀɴsʟᴀᴛᴇ</b>"
-                    ),
-                )
+            InlineQueryResultArticle(
+                title="Pilih Bahasa",
+                input_message_content=InputTextMessageContent(
+                    "<b>Silakan pilih bahasa untuk translate</b>"
+                ),
+                reply_markup=buttons,
             )
         ],
     )
 
-
 async def set_bahasa_callback(client, callback_query):
+    """Handle callback query for setting language."""
     data = callback_query.data.split()
-    try:
-        m = [obj for obj in get_objects() if id(obj) == int(data[1])][0]
-        m._client._translate[m._client.me.id] = {"negara": lang_code_translate[data[2]]}
-        return await callback_query.edit_message_text(
-            f"<b>✅ ʙᴇʀʜᴀsɪʟ ᴅɪᴜʙᴀʜ ᴋᴇ ʙᴀʜᴀsᴀ</b> {Fonts.smallcap(data[2].lower())}"
-        )
-    except Exception as error:
-        return await callback_query.edit_message_text(f"<code>{error}</code>")
-
+    user_id = int(data[1])
+    lang = data[2]
+    client._translate[user_id] = {"negara": lang_code_translate[lang]}
+    await callback_query.edit_message_text(
+        f"<b>✅ Bahasa berhasil diubah ke:</b> {Fonts.smallcap(lang.lower())}"
+    )
 
 
 @DANTE.UBOT("tr|tl")
@@ -159,6 +154,5 @@ async def _(client, message):
 
 
 @DANTE.CALLBACK("^set_bahasa")
-@DANTE.INLINE
 async def _(client, callback_query):
     await set_bahasa_callback(client, callback_query)
