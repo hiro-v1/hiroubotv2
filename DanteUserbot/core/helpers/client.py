@@ -254,8 +254,10 @@ class DANTE:
                 await func(client, message)
 
             return wrapped_func
-        
-  @staticmethod
+
+        return wrapper
+
+    @staticmethod
     def TOP_CMD(func):
         """Dekorator untuk mencatat penggunaan command dalam database."""
         async def function(client, message):
