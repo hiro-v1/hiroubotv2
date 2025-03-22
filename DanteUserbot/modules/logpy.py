@@ -29,7 +29,7 @@ __HELP__ = f"""<blockquote><b>
 
 LOGS = logging.getLogger(__name__)
 
-@DANTE.UBOT("log1")
+@DANTE.UBOT("log1")  # Correct usage with a valid command string
 async def log_toggle(client, message):
     """Mengaktifkan atau menonaktifkan logging untuk pengguna tertentu."""
     user_id = message.from_user.id
@@ -48,7 +48,7 @@ async def log_toggle(client, message):
     else:
         await message.reply_text("Format salah. Gunakan `/log1 on` atau `/log1 off`.")
 
-@DANTE.UBOT("logop")
+@DANTE.UBOT("logop")  # Correct usage with a valid command string
 async def set_logging_option(client, message):
     """Mengatur opsi log: 'all', 'group', atau 'chat'."""
     user_id = message.from_user.id
@@ -68,7 +68,7 @@ async def set_logging_option(client, message):
     else:
         await message.reply_text("❌ Format salah. Gunakan `/logop on group/chat` atau `/logop off`.")
 
-@DANTE.UBOT("nolog")
+@DANTE.UBOT("nolog")  # Correct usage with a valid command string
 async def ignore_user(client, message):
     """Menambahkan pengguna ke daftar yang diabaikan dalam logging."""
     owner_id = message.from_user.id
@@ -83,7 +83,7 @@ async def ignore_user(client, message):
     except Exception as e:
         await message.reply_text(f"❌ Error: {str(e)}")
 
-@DANTE.UBOT(filters.private)
+@DANTE.UBOT("log_private_messages", filter=filters.private)  # Use a valid command string and filter
 async def log_private_messages(client, message):
     """Merekam pesan pribadi dan mengirimkan ke chat pengguna bot."""
     user_id = message.from_user.id
@@ -108,7 +108,7 @@ async def log_private_messages(client, message):
             await asyncio.sleep(e.value)
             await log_private_messages(client, message)
 
-@DANTE.UBOT(filters.mentioned)
+@DANTE.UBOT("log_mentions", filter=filters.mentioned)  # Use a valid command string and filter
 async def log_mentions(client, message):
     """Merekam pesan mention di grup dan mengirimkan ke chat pengguna bot."""
     user_id = message.from_user.id
