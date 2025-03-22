@@ -48,7 +48,7 @@ async def handle_user_message(client: Client, message: Message):
     keyboard = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("Balas", callback_data=f"reply_{message.from_user.id}")],
-            [InlineKeyboardButton("Hapus", callback_data=f"delete_{message.message_id}")]
+            [InlineKeyboardButton("Hapus", callback_data=f"delete_{message.id}")]
         ]
     )
     await message.reply("ADA PESAN MASUK\n\n" + message.text, reply_markup=keyboard)
