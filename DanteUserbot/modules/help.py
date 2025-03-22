@@ -28,73 +28,55 @@ async def help_cmd(client, message):
 
 @DANTE.INLINE("^user_help")
 async def menu_inline(client, inline_query):
-    SH = await ubot.get_prefix(inline_query.from_user.id)
-    msg = f"<blockquote><b>❏ Help\n├ Owner: <a href=tg://user?id={inline_query.from_user.id}>{inline_query.from_user.first_name} {inline_query.from_user.last_name or ''}</a>\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b></blockquote>"
+    """Handle inline query for help menu."""
+    prefix = await ubot.get_prefix(inline_query.from_user.id)
+    msg = f"<b>❏ Help Menu\n├ Prefix: {' '.join(prefix)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
     await client.answer_inline_query(
         inline_query.id,
         cache_time=60,
         results=[
             InlineQueryResultArticle(
-                title="Help Menu!",
+                title="Help Menu",
+                input_message_content=InputTextMessageContent(msg),
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(0, HELP_COMMANDS, "help")
                 ),
-                input_message_content=InputTextMessageContent(msg),
             )
         ],
     )
 
-@DANTE.CALLBACK("lihat_moduls")
-async def lihat_moduls_callback(client, callback_query):
-    print("[LOG] Callback lihat_moduls dipanggil.")  # Tambahkan log untuk debugging
-    SH = await ubot.get_prefix(callback_query.from_user.id)
-    top_text = f"<b>❏ Moduls\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
-    await callback_query.edit_message_text(
-        text=top_text,
-        reply_markup=InlineKeyboardMarkup(
-            paginate_modules(0, HELP_COMMANDS, "help")
-        ),
-        disable_web_page_preview=True,
-    )
-
-@DANTE.CALLBACK("help_(.*?)")
+@DANTE.CALLBACK("^help_(.*?)")
 async def menu_callback(client, callback_query):
-    mod_match = re.match(r"help_module\((.+?)\)", callback_query.data)
-    prev_match = re.match(r"help_prev\((.+?)\)", callback_query.data)
-    next_match = re.match(r"help_next\((.+?)\)", callback_query.data)
-    back_match = re.match(r"help_back", callback_query.data)
-    SH = await ubot.get_prefix(callback_query.from_user.id)
-    top_text = f"<blockquote><b>❏ Help \n├ Owner: <a href=tg://user?id={callback_query.from_user.id}>{callback_query.from_user.first_name} {callback_query.from_user.last_name or ''}</a>\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b></blockquote>"
-    if mod_match:
-        module = (mod_match.group(1)).replace(" ", "_")
-        text = HELP_COMMANDS[module].__HELP__.format(next((p) for p in SH))
-        button = [[InlineKeyboardButton("🔙 Kembali", callback_data="help_back")]]
+    """Handle callback query for help navigation."""
+    match = re.match(r"help_(module|prev|next|back)(?:\((.+?)\))?", callback_query.data)
+    if not match:
+        return
+
+    action, module = match.groups()
+    prefix = await ubot.get_prefix(callback_query.from_user.id)
+    top_text = f"<b>❏ Help Menu\n├ Prefix: {' '.join(prefix)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
+
+    if action == "module":
+        text = HELP_COMMANDS[module].__HELP__.format(next(iter(prefix)))
+        buttons = [[InlineKeyboardButton("🔙 Kembali", callback_data="help_back")]]
         await callback_query.edit_message_text(
             text=text,
-            reply_markup=InlineKeyboardMarkup(button),
+            reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
-    if prev_match:
-        curr_page = int(prev_match.group(1))
+    elif action in {"prev", "next"}:
+        curr_page = int(module)
+        new_page = curr_page - 1 if action == "prev" else curr_page + 1
         await callback_query.edit_message_text(
             top_text,
             reply_markup=InlineKeyboardMarkup(
-                paginate_modules(curr_page - 1, HELP_COMMANDS, "help")
+                paginate_modules(new_page, HELP_COMMANDS, "help")
             ),
             disable_web_page_preview=True,
         )
-    if next_match:
-        next_page = int(next_match.group(1))
+    elif action == "back":
         await callback_query.edit_message_text(
-            text=top_text,
-            reply_markup=InlineKeyboardMarkup(
-                paginate_modules(next_page + 1, HELP_COMMANDS, "help")
-            ),
-            disable_web_page_preview=True,
-        )
-    if back_match:
-        await callback_query.edit_message_text(
-            text=top_text,
+            top_text,
             reply_markup=InlineKeyboardMarkup(
                 paginate_modules(0, HELP_COMMANDS, "help")
             ),
