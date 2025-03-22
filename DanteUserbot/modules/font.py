@@ -34,9 +34,7 @@ async def font_message(client, message):
     except Exception as error:
         return await message.reply(error)
 
-
-
-@DANTE.INLINE("^get_font")
+@DANTE.INLINE("^get_font")  # ✅ Tambahkan string regex
 async def font_inline(client, inline_query):
     get_id = int(inline_query.query.split(None, 1)[1])
     buttons = InlineKeyboard(row_width=3)
@@ -51,21 +49,18 @@ async def font_inline(client, inline_query):
         inline_query.id,
         cache_time=0,
         results=[
-            (
-                InlineQueryResultArticle(
-                    title="get font!",
-                    reply_markup=buttons,
-                    input_message_content=InputTextMessageContent(
-                        "<b>👇 sɪʟᴀʜᴋᴀɴ ᴘɪʟɪʜ sᴀʟᴀʜ sᴀᴛᴜ ғᴏɴᴛ ᴅɪʙᴀᴡᴀʜ</b>"
-                    ),
-                )
+            InlineQueryResultArticle(
+                title="get font!",
+                reply_markup=buttons,
+                input_message_content=InputTextMessageContent(
+                    "<b>👇 sɪʟᴀʜᴋᴀɴ ᴘɪʟɪʜ sᴀʟᴀʜ sᴀᴛᴜ ғᴏɴᴛ ᴅɪʙᴀᴡᴀʜ</b>"
+                ),
             )
         ],
     )
 
-
 @DANTE.CALLBACK("^get")
-@DANTE.INLINE
+@DANTE.INLINE("^get")  # ✅ Tambahkan string regex
 async def font_callback(client, callback_query):
     try:
         q = int(callback_query.data.split()[1])
@@ -80,9 +75,8 @@ async def font_callback(client, callback_query):
     except Exception as error:
         return await callback_query.answer(f"❌ Error: {error}", True)
 
-
 @DANTE.CALLBACK("^next")
-@DANTE.INLINE
+@DANTE.INLINE("^next")  # ✅ Tambahkan string regex
 async def font_next(client, callback_query):
     try:
         get_id = int(callback_query.data.split()[1])
@@ -101,7 +95,7 @@ async def font_next(client, callback_query):
         return await callback_query.answer(f"❌ Error: {error}", True)
 
 @DANTE.CALLBACK("^prev")
-@DANTE.INLINE
+@DANTE.INLINE("^prev")  # ✅ Tambahkan string regex
 async def font_prev(client, callback_query):
     try:
         get_id = int(callback_query.data.split()[1])
