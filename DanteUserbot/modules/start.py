@@ -224,4 +224,16 @@ async def buat_ubot_callback(client, callback_query):
 @DANTE.BOT("start")
 async def start_handler(client, message):
     await start_cmd(client, message)
+
 @DANTE.CALLBACK("lihat_moduls")
+async def lihat_moduls_callback(client, callback_query):
+    """Handles the 'lihat_moduls' callback query."""
+    SH = await ubot.get_prefix(callback_query.from_user.id)
+    top_text = f"<b>❏ Moduls\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
+    await callback_query.message.edit_text(
+        text=top_text,
+        reply_markup=InlineKeyboardMarkup(
+            paginate_modules(0, HELP_COMMANDS, "help")
+        ),
+        disable_web_page_preview=True,
+    )
