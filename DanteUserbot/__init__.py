@@ -128,7 +128,7 @@ class Ubot(Client):
 
     async def start(self):
         await super().start()
-        await self.call_py.start()
+        await self.call_py.start(group=None)  # Provide a default value for 'group'
         handler = await get_pref(self.me.id)
         if handler:
             self._prefix[self.me.id] = handler
