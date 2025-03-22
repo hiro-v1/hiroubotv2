@@ -2,7 +2,7 @@ from pyrogram import filters
 from pyrogram.enums import ChatType
 from DanteUserbot import *
 import re
-from pyrogram.types import InlineKeyboardButton  # Pastikan ini diimpor
+from pyrogram.types import InlineKeyboardButton, CallbackQuery  # Add CallbackQuery to the imports
 
 MSG = "Message Placeholder"  # Tambahkan definisi MSG sesuai kebutuhan
 
