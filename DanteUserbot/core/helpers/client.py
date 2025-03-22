@@ -315,38 +315,26 @@ class DANTE:
 
     @staticmethod
     def CALLBACK(command):
-        """Dekorator untuk menangani callback query dengan regex filtering."""
+        """Decorator for handling callback queries with regex filtering."""
         if not isinstance(command, str):
-            raise TypeError("Command dalam CALLBACK harus berupa string.")
+            raise TypeError("Command in CALLBACK must be a string.")
 
         def wrapper(func):
             @bot.on_callback_query(filters.regex(command))
-            async def wrapped_func(client, callback_query: CallbackQuery):
-                logging.info(f"[CALLBACK] Query diterima: {callback_query.data}")
+            async def wrapped_func(client, callback_query):
+                logging.info(f"[CALLBACK] Query received: {callback_query.data}")
 
-                # Cek parameter tambahan dari CallbackQuery
-                user_id = callback_query.from_user.id
+                # Extract additional parameters from the callback query
                 query_data = callback_query.data
-                chat_instance = callback_query.chat_instance if callback_query.chat_instance else "None"
-                inline_msg_id = callback_query.inline_message_id if callback_query.inline_message_id else "None"
-                game_name = callback_query.game_short_name if callback_query.game_short_name else "None"
-
-                logging.info(
-                    f"[CALLBACK] User: {user_id}, ChatInstance: {chat_instance}, "
-                    f"InlineMsgID: {inline_msg_id}, Game: {game_name}"
-                )
-
-                # Jika filter regex digunakan, kita bisa mendapatkan matches
                 matches = callback_query.matches if hasattr(callback_query, "matches") else []
 
-                # Panggil fungsi yang didekorasi dengan informasi tambahan
-                await func(client, callback_query, query_data, matches, chat_instance, inline_msg_id, game_name)
+                # Call the decorated function with only the necessary arguments
+                await func(client, callback_query)
 
             return wrapped_func
 
         return wrapper
 
-        return wrapper  # Correctly indented
     @staticmethod
     def SUDO(command):
         """Dekorator untuk menangani command yang hanya bisa digunakan oleh Sudo Users."""
