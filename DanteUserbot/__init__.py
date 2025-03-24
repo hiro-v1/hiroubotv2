@@ -128,15 +128,19 @@ class Ubot(Client):
 
     async def start(self):
         await super().start()
-    if group:
-        await self.call_py.start(group)
-    else:
-        logging.warning("⚠️ Tidak ada grup yang disediakan, melewati proses pemanggilan grup.")
+        if hasattr(self, "call_py") and self.call_py:
+            try:
+                await self.call_py.start(group=None)  # Provide a default value for 'group'
+            except Exception as e:
+                logging.warning(f"⚠️ Failed to start group call: {e}")
+        else:
+            logging.warning("⚠️ call_py is not initialized, skipping group call start.")
         handler = await get_pref(self.me.id)
         if handler:
             self._prefix[self.me.id] = handler
         else:
             self._prefix[self.me.id] = ["."]
+
         self._ubot.append(self)
         self._get_my_id.append(self.me.id)
         self._translate[self.me.id] = "id"
