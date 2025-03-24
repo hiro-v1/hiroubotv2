@@ -1,17 +1,48 @@
 import asyncio
-
-from pyrogram import idle
 import os
+from pyrogram import idle
 from DanteUserbot import *
 from pyrogram import Client
-from atexit import register
-from DanteUserbot.core.helpers.tools import *
 
+# Fungsi untuk menghapus sesi yang kadaluarsa
+async def hapus_session_kadaluarsa():
+    """Hapus hanya sesi yang tidak digunakan"""
+    for filename in os.listdir():
+        if filename.endswith(".session"):
+            filepath = os.path.join(os.getcwd(), filename)
+            os.remove(filepath)  # Remove all SQLite session files
+
+# Fungsi untuk membersihkan userbot yang gagal atau tidak merespons
+async def bersihkan_userbot(user_id, tambahkan_premium=False):
+    await remove_ubot(user_id)
+    await rm_all(user_id)
+    await remove_all_vars(user_id)
+    await rem_pref(user_id)
+    await rem_expired_date(user_id)
+
+    for chat_id in await get_chat(user_id):
+        await remove_chat(user_id, chat_id)
+
+    if tambahkan_premium:
+        await add_prem(user_id)
+        await sending_user(user_id)
+
+    # Kirim notifikasi ke OWNER jika tersedia
+    if OWNER_ID:
+        await bot.send_message(
+            OWNER_ID, f"❌ Userbot {user_id} telah dihapus dari sistem."
+        )
+
+    print(f"[INFO] - Userbot ({user_id}) berhasil dibersihkan.")
+
+# Fungsi untuk memulai userbot
 async def start_ubot(user_id, _ubot):
     ubot_ = Ubot(**_ubot)
     try:
         await asyncio.wait_for(ubot_.start(), timeout=30)
+        print(f"[INFO] - Userbot {user_id} berhasil dijalankan.")
     except asyncio.TimeoutError:
+        print(f"[INFO] - Userbot ({user_id}) tidak merespon, mencoba restart...")
         await remove_ubot(user_id)
         await add_prem(user_id)
         await rm_all(user_id)
@@ -20,8 +51,8 @@ async def start_ubot(user_id, _ubot):
         for X in await get_chat(user_id):
             await remove_chat(user_id, X)
         await sending_user(user_id)
-        print(f"[𝗜𝗡𝗙𝗢] - ({user_id}) 𝗧𝗜𝗗𝗔𝗞 𝗗𝗔𝗣𝗔𝗧 𝗠𝗘𝗥𝗘𝗦𝗣𝗢𝗡")
-    except Exception:
+    except Exception as e:
+        print(f"⚠️ {user_id} gagal dijalankan. Error: {e}")
         await remove_ubot(user_id)
         await rm_all(user_id)
         await remove_all_vars(user_id)
@@ -29,17 +60,17 @@ async def start_ubot(user_id, _ubot):
         await rem_expired_date(user_id)
         for X in await get_chat(user_id):
             await remove_chat(user_id, X)
-        print(f"✅ {user_id} 𝗕𝗘𝗥𝗛𝗔𝗦𝗜𝗟 𝗗𝗜𝗛𝗔𝗣𝗨𝗦")
 
+# Fungsi utama untuk menjalankan semua userbot
 async def main():
-    await bash("rm -rf *session*")
+    print("[LOG] Memulai bot...")
+    await bot.start()
     tasks = [
-        asyncio.create_task(start_ubot(int(_ubot["name"]), _ubot))
+        asyncio.create_task(start_ubot(int(_ubot.get("name", 0)), _ubot))
         for _ubot in await get_DanteUserbots()
+        if "name" in _ubot  # Pastikan kunci 'name' ada
     ]
-    await asyncio.gather(*tasks, bot.start())
-    await asyncio.gather(loadPlugins(), expiredUserbots(), idle())
+    await asyncio.gather(*tasks, idle())
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop_policy().get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())
