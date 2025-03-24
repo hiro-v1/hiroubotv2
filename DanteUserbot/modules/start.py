@@ -219,7 +219,8 @@ async def coba_gratis_callback(client, callback_query):
 
 @DANTE.CALLBACK("buat_ubot")
 async def buat_ubot_callback(client, callback_query):
-    await callback_query.message.edit_text("⚒️ Silakan ikuti langkah-langkah untuk membuat UBot.")
+    # Arahkan ke payment_userbot untuk memeriksa status pembayaran
+    await payment_userbot(client, callback_query)
 
 @DANTE.BOT("start")
 async def start_handler(client, message):
