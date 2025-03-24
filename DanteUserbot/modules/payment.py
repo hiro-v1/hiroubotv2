@@ -176,3 +176,21 @@ async def handle_payment_status(client, callback_query):
             MSG.START(callback_query),
             reply_markup=InlineKeyboardMarkup(buttons_home),
         )
+
+async def payment_userbot(client, callback_query):
+    user_id = callback_query.from_user.id
+    if user_id in await get_prem():
+        # Jika sudah premium, arahkan ke proses pembuatan UBot
+        buttons = [[InlineKeyboardButton("⚒️ Lanjutkan ke Buat UBot", callback_data="memek")]]
+        return await callback_query.edit_message_text(
+            "✅ Anda sudah melakukan pembayaran. Silakan lanjutkan ke proses pembuatan UBot.",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+    else:
+        # Jika belum premium, tampilkan pesan untuk melakukan pembayaran
+        buttons = Button.plus_minus(1, user_id)
+        return await callback_query.edit_message_text(
+            MSG.TEXT_PAYMENT(20, 20, 1),
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
