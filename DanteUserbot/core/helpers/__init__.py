@@ -17,14 +17,17 @@ from DanteUserbot.core.helpers.pmdb import *
 from DanteUserbot.core.helpers.Danstring import *
 from DanteUserbot.core.helpers.emoji import *
 
+import os
+
 def loadModule():
     """
     Function to load modules dynamically.
     Returns a list of module names.
     """
-    # Example implementation (adjust as needed)
-    import os
-    modules_dir = os.path.join(os.path.dirname(__file__), "..", "modules")
+    modules_dir = os.path.join(os.path.dirname(__file__), "../modules")
+    if not os.path.exists(modules_dir):
+        print(f"⚠️ Directory '{modules_dir}' does not exist. Skipping module loading.")
+        return []  # Return an empty list if the directory does not exist
     return [
         f[:-3]
         for f in os.listdir(modules_dir)
