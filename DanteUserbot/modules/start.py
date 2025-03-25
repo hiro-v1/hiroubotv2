@@ -139,6 +139,7 @@ async def ping_cmd(client, message):
         await message.reply(f"Error: {error}")
 
 async def start_cmd(client, message):
+    """Logika utama untuk perintah /start."""
     await add_served_user(message.from_user.id)
     if message.from_user.id != OWNER_ID:
         await send_msg_to_owner(client, message)
@@ -157,7 +158,9 @@ async def _(client, message):
     await ping_cmd(client, message)
 
 @DANTE.BOT("start")
-async def _(client, message):
+async def start_handler(client, message):
+    """Handler untuk perintah /start."""
+    print(f"[LOG] Perintah /start diterima dari {message.from_user.id}")
     await start_cmd(client, message)
 
 @DANTE.CALLBACK("profil")
