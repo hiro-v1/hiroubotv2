@@ -1,6 +1,6 @@
 from .. import *
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 from gc import get_objects
 from time import time
@@ -10,6 +10,8 @@ from pyrogram.raw.functions import Ping
 from pytgcalls import __version__ as pytg
 from pyrogram import __version__ as pyr
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from DanteUserbot.core.helpers.inline import Button
+from DanteUserbot.core.database.premium import is_trial_used, mark_trial_used, add_prem, set_expired_date
 
 from DanteUserbot import *
 
@@ -141,16 +143,7 @@ async def start_cmd(client, message):
     if message.from_user.id != OWNER_ID:
         await send_msg_to_owner(client, message)
 
-    buttons = [
-        [
-            InlineKeyboardButton("🎁 Coba Gratis", callback_data="coba_gratis"),
-            InlineKeyboardButton("🤖 Buat UBot", callback_data="buat_ubot"),
-        ],
-        [
-            InlineKeyboardButton("📚 Moduls", callback_data="lihat_moduls"),
-            InlineKeyboardButton("☎️ Bantuan", callback_data="hubungi_owner"),
-        ],
-    ]
+    buttons = Button.start(message)
     welcome_text = (
         f"👋 Halo {message.from_user.first_name}!\n\n"
         f"Selamat datang di HiroUserbot. HiroUserbot adalah solusi otomatisasi Telegram yang andal dan mudah digunakan.\n\n"
@@ -208,19 +201,44 @@ async def hubungi_owner_callback(client, callback_query):
 async def coba_gratis_callback(client, callback_query):
     user_id = callback_query.from_user.id
     if await is_trial_used(user_id):
-        await callback_query.answer("❌ Anda sudah pernah mencoba gratis.", show_alert=True)
-        return
-    now = datetime.now()
-    expired_date = now + timedelta(days=1)
-    await add_prem(user_id)
-    await set_expired_date(user_id, expired_date)
-    await mark_trial_used(user_id)
-    await callback_query.message.edit_text("✅ Anda telah mendapatkan akses premium selama 1 hari!")
+        buttons = [
+            [InlineKeyboardButton("💳 Lakukan Pembayaran 💳", callback_data="bayar_dulu")]
+        ]
+        return await callback_query.edit_message_text(
+            """<blockquote>
+<b>Anda sudah pernah mencoba gratis, silahkan beli untuk menikmati fasilitas bot.</b></blockquote>
+""",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+    else:
+        # Tandai pengguna sebagai sudah menggunakan trial
+        await mark_trial_used(user_id)
+        await add_prem(user_id)
+
+        now = datetime.now()
+        expired = now + timedelta(days=1)
+        await set_expired_date(user_id, expired)
+
+        buttons = [
+            [InlineKeyboardButton("⚒️ Buat HiroUserbot", callback_data="buat_ubot")]
+        ]
+        return await callback_query.edit_message_text(
+            """<blockquote>
+<b>Anda telah mendapatkan akses premium selama 1 hari. Silahkan gunakan fasilitas bot.</b></blockquote>
+""",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
 
 @DANTE.CALLBACK("buat_ubot")
 async def buat_ubot_callback(client, callback_query):
-    # Arahkan ke payment_userbot untuk memeriksa status pembayaran
-    await payment_userbot(client, callback_query)
+    buttons = [
+        [InlineKeyboardButton("💳 Lakukan Pembayaran", callback_data="bayar_dulu")],
+        [InlineKeyboardButton("Kembali", callback_data="home")]
+    ]
+    await callback_query.edit_message_text(
+        "⚒️ Silakan ikuti langkah-langkah untuk membuat UBot.",
+        reply_markup=InlineKeyboardMarkup(buttons),
+    )
 
 @DANTE.BOT("start")
 async def start_handler(client, message):
