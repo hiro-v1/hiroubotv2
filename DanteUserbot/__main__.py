@@ -21,7 +21,11 @@ async def bersihkan_userbot(user_id, tambahkan_premium=False):
     await rem_pref(user_id)
     await rem_expired_date(user_id)
 
-    for chat_id in await get_chat(user_id):
+    chats = await get_chat(user_id)
+    if chats is None:
+        chats = []  # Pastikan chats adalah daftar kosong jika None
+
+    for chat_id in chats:
         await remove_chat(user_id, chat_id)
 
     if tambahkan_premium:
