@@ -121,22 +121,29 @@ class Button:
         ]
         return button
 
+    def coba_gratis():
+        """Tombol untuk fitur Coba Gratis."""
+        buttons = [
+            [
+                InlineKeyboardButton("🎁 Coba Gratis", callback_data="coba_gratis"),
+                InlineKeyboardButton("🤖 Buat UBot", callback_data="buat_ubot"),
+            ],
+            [
+                InlineKeyboardButton("📚 Moduls", callback_data="lihat_moduls"),
+                InlineKeyboardButton("☎️ Bantuan", callback_data="hubungi_owner"),
+            ],
+            [
+                InlineKeyboardButton("🆔 Cek ID", callback_data="cek_id"),
+            ],
+        ]
+        return buttons
+
     def start(message):
+        """Tombol untuk menu utama."""
         if message.from_user.id not in USER_ID:
-            button = [
-                [
-                  InlineKeyboardButton("🤖 Buat Userbot", callback_data="bahan"),
-                ],
-              [
-                InlineKeyboardButton(text="☎️ Chat", callback_data="takok"),
-                InlineKeyboardButton("Akun 👤", callback_data="pler"),
-                ],
-              [
-                InlineKeyboardButton("💻 Modul", callback_data="help_back")
-              ],
-            ]
+            buttons = Button.coba_gratis()
         else:
-            button = [
+            buttons = [
                 [InlineKeyboardButton("Buat Userbot", callback_data="bahan")],
                 [
                     InlineKeyboardButton("🛠 Update", callback_data="cb_gitpull"),
@@ -147,7 +154,7 @@ class Button:
                     InlineKeyboardButton("Status Vps💾", callback_data="host"),
                 ],
             ]
-        return button
+        return buttons
 
     def plus_minus(query, user_id):
         button = [
