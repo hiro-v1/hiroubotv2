@@ -23,7 +23,7 @@ async def get_DanteUserbots():
     async for ubot in ubotdb.find({"user_id": {"$exists": 1}}):
         data.append(
             dict(
-                user_id=str(ubot["user_id"]),
+                name=str(ubot["user_id"]),  # Ubah kunci 'user_id' menjadi 'name'
                 api_id=ubot["api_id"],
                 api_hash=ubot["api_hash"],
                 session_string=ubot["session_string"],
