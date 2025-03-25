@@ -1,8 +1,7 @@
 import asyncio
 import os
 from pyrogram import idle
-from DanteUserbot import *
-from pyrogram import Client
+from DanteUserbot import bot, get_DanteUserbots, Ubot
 
 # Fungsi untuk menghapus sesi yang kadaluarsa
 async def hapus_session_kadaluarsa():
@@ -43,34 +42,31 @@ async def start_ubot(user_id, _ubot):
         print(f"[INFO] - Userbot {user_id} berhasil dijalankan.")
     except asyncio.TimeoutError:
         print(f"[INFO] - Userbot ({user_id}) tidak merespon, mencoba restart...")
-        await remove_ubot(user_id)
-        await add_prem(user_id)
-        await rm_all(user_id)
-        await rem_pref(user_id)
-        await remove_all_vars(user_id)
-        for X in await get_chat(user_id):
-            await remove_chat(user_id, X)
-        await sending_user(user_id)
+        await bersihkan_userbot(user_id, tambahkan_premium=True)
+        await ubot_.start()
+        print(f"[INFO] Userbot {user_id} berhasil dijalankan.")
     except Exception as e:
         print(f"⚠️ {user_id} gagal dijalankan. Error: {e}")
-        await remove_ubot(user_id)
-        await rm_all(user_id)
-        await remove_all_vars(user_id)
-        await rem_pref(user_id)
-        await rem_expired_date(user_id)
-        for X in await get_chat(user_id):
-            await remove_chat(user_id, X)
+        await bersihkan_userbot(user_id)
 
 # Fungsi utama untuk menjalankan semua userbot
 async def main():
     print("[LOG] Memulai bot...")
-    await bot.start()
-    tasks = [
-        asyncio.create_task(start_ubot(int(_ubot.get("name", 0)), _ubot))
-        for _ubot in await get_DanteUserbots()
-        if "name" in _ubot  # Pastikan kunci 'name' ada
-    ]
-    await asyncio.gather(*tasks, idle())
+    try:
+        await bot.start()
+        print(f"[INFO] Bot {bot.me.username} berhasil dijalankan.")
+    except Exception as e:
+        print(f"⚠️ Gagal menjalankan bot: {e}")
+        return
+
+    tasks = []
+    for _ubot in await get_DanteUserbots():
+        user_id = int(_ubot["name"])
+        tasks.append(asyncio.create_task(start_ubot(user_id, _ubot)))
+
+    if tasks:
+        await asyncio.gather(*tasks)
+    await idle()
 
 if __name__ == "__main__":
     asyncio.run(main())
