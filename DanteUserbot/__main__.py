@@ -2,6 +2,8 @@ import asyncio
 import os
 from pyrogram import idle
 from DanteUserbot import bot, get_DanteUserbots, Ubot
+from DanteUserbot.core.database.DanteUserbot import remove_ubot  # Tambahkan impor ini
+from DanteUserbot.core.database import rm_all, remove_all_vars, rem_pref, rem_expired_date, get_chat, remove_chat
 
 # Fungsi untuk menghapus sesi yang kadaluarsa
 async def hapus_session_kadaluarsa():
