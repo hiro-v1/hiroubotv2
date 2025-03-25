@@ -21,3 +21,10 @@ async def remove_prem(user_id):
         prem_list.remove(user_id)
         await user.update_one({"prem": "prem"}, {"$set": {"list": prem_list}}, upsert=True)
     return True
+
+async def set_expired_date(user_id, expired_date):
+    await user.update_one(
+        {"user_id": user_id},
+        {"$set": {"expired_date": expired_date}},
+        upsert=True,
+    )
