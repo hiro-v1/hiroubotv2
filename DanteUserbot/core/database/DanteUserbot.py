@@ -37,3 +37,11 @@ async def get_expired_date(user_id):
     """
     user_data = await ubotdb.find_one({"user_id": user_id}, {"_id": 0, "expired_date": 1})
     return user_data.get("expired_date") if user_data else None
+
+async def get_chat(user_id):
+    """
+    Mengembalikan daftar chat yang terkait dengan user_id.
+    Jika tidak ada data, kembalikan daftar kosong.
+    """
+    user_data = await ubotdb.find_one({"user_id": user_id}, {"_id": 0, "chats": 1})
+    return user_data.get("chats", []) if user_data else []
