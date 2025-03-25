@@ -40,6 +40,12 @@ class Bot(Client):
     def __init__(self, **kwargs):
         super().__init__(**kwargs, device_model="Dante UBot")
 
+    async def start(self):
+        await super().start()
+        if not self.me:
+            self.me = await self.get_me()  # Pastikan bot.me diinisialisasi
+        print(f"[INFO] Bot {self.me.username} berhasil dijalankan.")
+
     def on_message(self, filters=None, group=-1):
         def decorator(func):
             self.add_handler(MessageHandler(func, filters), group)
@@ -70,9 +76,6 @@ class Bot(Client):
             return func
 
         return decorator
-
-    async def start(self):
-        await super().start()
 
 class Ubot(Client):
     __module__ = "pyrogram.client"
@@ -128,23 +131,19 @@ class Ubot(Client):
 
     async def start(self):
         await super().start()
+        if not self.me:
+            self.me = await self.get_me()  # Pastikan ubot.me diinisialisasi
         if hasattr(self, "call_py") and self.call_py:
             try:
-                await self.call_py.start(group=None)  # Provide a default value for 'group'
+                await self.call_py.start(group=None)  # Mulai panggilan grup jika ada
             except Exception as e:
-                logging.warning(f"⚠️ Failed to start group call: {e}")
-        else:
-            logging.warning("⚠️ call_py is not initialized, skipping group call start.")
+                print(f"⚠️ Gagal memulai panggilan grup: {e}")
         handler = await get_pref(self.me.id)
-        if handler:
-            self._prefix[self.me.id] = handler
-        else:
-            self._prefix[self.me.id] = ["."]
-
+        self._prefix[self.me.id] = handler if handler else ["."]
         self._ubot.append(self)
         self._get_my_id.append(self.me.id)
         self._translate[self.me.id] = "id"
-        print(f"[𝐈𝐍𝐅𝐎] - ({self.me.id}) - 𝐒𝐓𝐀𝐑𝐓𝐄𝐃")
+        print(f"[INFO] Userbot {self.me.id} berhasil dijalankan.")
 
 bot = Bot(
     name="bot",
