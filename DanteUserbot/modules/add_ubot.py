@@ -82,7 +82,6 @@ async def payment_userbot(client, callback_query):
 async def bikin_memek(client, callback_query):
     user_id = callback_query.from_user.id
     if user_id not in await get_prem():
-        # Jika belum premium, arahkan kembali ke pembayaran
         buttons = [
             [InlineKeyboardButton("💳 Lakukan Pembayaran", callback_data="bayar_dulu")],
             [InlineKeyboardButton("Kembali", callback_data=f"home {user_id}")],
@@ -91,7 +90,6 @@ async def bikin_memek(client, callback_query):
             "❌ Anda belum melakukan pembayaran. Silakan lakukan pembayaran terlebih dahulu.",
             reply_markup=InlineKeyboardMarkup(buttons),
         )
-    # Jika sudah premium, lanjutkan ke proses pembuatan UBot
     if user_id in ubot._get_my_id:
         buttons = [
             [InlineKeyboardButton("kembali", callback_data=f"home {user_id}")],
@@ -462,7 +460,7 @@ async def ohaja(client, callback_query):
 <b>nousername</b>
  <b>status :</b> <code>premium</code>
   <b>prefixes :</b> <code>{prefix[0]}</code>
-  <b>expired_on:</b> <code>{waktu}</code></b>
+  <b>expired_on:</b> <code>{waktu}</code>
   <b>bot_uptime : <code>{uptime}</code></b>
 </blockquote>""",
             disable_web_page_preview=True,
