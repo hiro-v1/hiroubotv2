@@ -5,7 +5,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from DanteUserbot import bot, ubot
 from DanteUserbot.config import OWNER_ID
 from DanteUserbot.modules import loadModule
-from DanteUserbot.core.helpers.client import DANTE
+from DanteUserbot.core.helpers.text import MSG
 
 HELP_COMMANDS = {}
 
@@ -23,15 +23,7 @@ async def loadPlugins():
     print(f"[🤖 @{bot.me.username}] [⚡ TELAH BERHASIL DIAKTIFKAN!]")
     await bot.send_message(
         OWNER_ID,
-        f"""
-<b>🤖 {bot.me.mention} berhasil diaktifkan</b>
-
-<b>📁 Modules: {len(HELP_COMMANDS)}</b>
-<b>📘 Python: {python_version()}</b>
-<b>📙 Pyrogram: {__version__}</b>
-
-<b>👤 DanteUserbot: {len(ubot._ubot)}</b>
-""",
+        MSG.PLUGINS_ACTIVATED(bot, ubot, python_version(), __version__, len(HELP_COMMANDS)),
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -46,3 +38,4 @@ async def loadPlugins():
 async def close_message(client, callback_query):
     """Menghapus pesan callback."""
     await callback_query.message.delete()
+
