@@ -12,6 +12,7 @@ from DanteUserbot.core.helpers.inline import Button
 from DanteUserbot.core.helpers.text import MSG
 from DanteUserbot.core.database.premium import add_served_user, add_prem, set_expired_date
 from DanteUserbot.core.database.trial import is_trial_used, mark_trial_used
+from DanteUserbot.core.function.plugins import loadPlugins
 
 START_TIME = datetime.utcnow()
 
@@ -81,6 +82,9 @@ async def start_cmd(client, message):
         buttons = Button.start(message)
         msg = MSG.START(message)
         await message.reply(msg, reply_markup=InlineKeyboardMarkup(buttons))
+        # Tambahkan pemanggilan loadPlugins untuk memastikan pesan muncul
+        if message.from_user.id == OWNER_ID:
+            await loadPlugins()
     else:
         txt = message.text.split(None, 1)[1]
         msg_id = txt.split("_", 1)[1]
