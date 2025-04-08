@@ -23,11 +23,12 @@ class MSG:
 
     
     def START(message):
+        print(f"[LOG] Fungsi MSG.START dipanggil untuk {message.from_user.id}")
         return f"""<blockquote>
 <b>Hallo <a href=tg://user?id={message.from_user.id}>{message.from_user.first_name} {message.from_user.last_name or ''}</a>
 🤖 saya adalah pembuat <b><u>userbot telegram</b></u> 
 
-🚦 saya memiliki modul yang lengkap untuk membantu aktivitas anda ditelegram, jika kamu penasaran dengan modul saya, silahkan cek di modul
+🚦 saya memiliki modul yang lengkap untuk membantu aktivitas anda di Telegram, jika kamu penasaran dengan modul saya, silahkan cek di modul
 
 ⚠️ jika kamu ingin menggunakan userbot ini <b><u>klik tombol buat userbot dibawah</b></u>
 </blockquote>
@@ -78,6 +79,17 @@ Tombol Lanjutkan:
 Klik tombol "Lanjutkan" untuk mengkonfirmasi 
 bahwa anda telah membaca dan menerima ketentuan ini dan 
 melanjutkan proses pembelian. Jika tidak, klik tombol "Kembali".
+</blockquote>"""
+
+    def PLUGINS_ACTIVATED(bot, ubot, python_version, pyrogram_version, modules_count):
+        return f"""<blockquote>
+<b>🤖 {bot.me.mention} berhasil diaktifkan</b>
+
+<b>📁 Modules: {modules_count}</b>
+<b>📘 Python: {python_version}</b>
+<b>📙 Pyrogram: {pyrogram_version}</b>
+
+<b>👤 DanteUserbot: {len(ubot._ubot)}</b>
 </blockquote>"""
 
 
