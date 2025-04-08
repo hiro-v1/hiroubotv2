@@ -1,34 +1,15 @@
 from .. import *
 import asyncio
-from datetime import datetime, timedelta
-import sys
-from gc import get_objects
+from datetime import datetime
 from time import time
+from gc import get_objects
 from DanteUserbot import bot, ubot
 from pyrogram.errors.exceptions.bad_request_400 import UserBannedInChannel
 from pyrogram.raw.functions import Ping
-from pytgcalls import __version__ as pytg
-from pyrogram import __version__ as pyr
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from DanteUserbot.core.helpers.inline import Button
-from DanteUserbot.core.database.premium import is_trial_used, mark_trial_used, add_prem, set_expired_date
-
-from DanteUserbot import *
-
-MODULE = "ᴘɪɴɢ & ꜱᴛᴀʀᴛ"
-HELP = f"""--ʙᴀɴᴛᴜᴀɴ ᴜɴᴛᴜᴋ ᴘɪɴɢ & ꜱᴛᴀʀᴛ--
-
-<blockquote>
-<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{PREFIX[0]}pong</code>
-<b>• ᴇxᴘʟᴀɴᴀᴛɪᴏɴ:</b> ᴜɴᴛᴜᴋ ᴍᴇɴɢᴜᴋᴜʀ ᴋᴇᴄᴇᴘᴀᴛᴀɴ ᴘɪɴɢ ᴅᴀʀɪ ʙᴏᴛ ᴅᴀɴ ᴍᴇɴᴀᴍᴘɪʟᴋᴀɴ ᴜᴘᴛɪᴍᴇ.
-</blockquote>
-
-<blockquote>
-<b>• ᴄᴏᴍᴍᴀɴᴅ:</b> <code>{PREFIX[0]}start</code>
-<b>• ᴇxᴘʟᴀɴᴀᴛɪᴏɴ:</b> ᴜɴᴛᴜᴋ ᴍᴇɴᴊᴀʟᴀɴᴋᴀɴ ᴘᴇʀɪɴᴛᴀʜ ꜱᴛᴀʀᴛ, ᴍᴇɴɢɪʀɪᴍ ᴘᴇꜱᴀɴ ᴋᴇ ᴏᴡɴᴇʀ, ᴅᴀɴ ᴍᴇɴᴇᴍᴘɪʟᴋᴀɴ ʙᴜᴛᴛᴏɴ ꜱᴛᴀʀᴛ.
-</blockquote>
-
-"""
+from DanteUserbot.core.helpers.text import MSG
+from DanteUserbot.core.database.premium import add_served_user
 
 START_TIME = datetime.utcnow()
 
@@ -39,6 +20,7 @@ TIME_DURATION_UNITS = (
     ("Menit", 60),
     ("Detik", 1),
 )
+
 async def _human_time_duration(seconds):
     if seconds == 0:
         return "inf"
@@ -46,61 +28,18 @@ async def _human_time_duration(seconds):
     for unit, div in TIME_DURATION_UNITS:
         amount, seconds = divmod(int(seconds), div)
         if amount > 0:
-            parts.append("{} {}{}".format(amount, unit, "" if amount == 1 else ""))
+            parts.append(f"{amount} {unit}")
     return ", ".join(parts)
 
 async def pong(client, message):
-    try:
-        start = time()
-        current_time = datetime.utcnow()
-        pong = await message.edit("Proses...")
-        delta_ping = time() - start
-        await asyncio.sleep(0.3)
-        await pong.edit("❏◈===❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏===◈❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏◈===❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏===◈❏")
-        await asyncio.sleep(0.3)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏◈===❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏=◈==❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏==◈=❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏===◈❏")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏===◈❏◈")
-        await asyncio.sleep(0.2)
-        await pong.edit("❏====❏◈◈")
-        await asyncio.sleep(0.2)
-        await pong.edit("**◈ Pong!**")
-        end = datetime.now()
-        uptime_sec = (current_time - START_TIME).total_seconds()
-        uptime = await _human_time_duration(int(uptime_sec))
-        await pong.edit(
-            f"<blockquote><b>❏Userbot\n❏Pong : {delta_ping * 1000:.3f} ms\n❏Bot Uptime : {uptime} </b></blockquote>"
-        )
-    except Exception as error:
-        await message.reply(f"Error: {error}")
+    start = time()
+    pong = await message.edit("Proses...")
+    delta_ping = time() - start
+    uptime_sec = (datetime.utcnow() - START_TIME).total_seconds()
+    uptime = await _human_time_duration(int(uptime_sec))
+    await pong.edit(
+        f"<blockquote><b>❏Userbot\n❏Pong : {delta_ping * 1000:.3f} ms\n❏Bot Uptime : {uptime} </b></blockquote>"
+    )
 
 async def send_msg_to_owner(client, message):
     if message.from_user.id == OWNER_ID:
@@ -117,40 +56,54 @@ async def send_msg_to_owner(client, message):
         reply_markup=InlineKeyboardMarkup(buttons),
     )
 
-from pyrogram.errors.exceptions.bad_request_400 import ReactionInvalid
-
 async def ping_cmd(client, message):
     try:
         start = datetime.now()
         await client.invoke(Ping(ping_id=0))
         end = datetime.now()
-        uptime = await get_time((time() - start_time))
-        delta_ping = round((end - start).microseconds / 10000, 2)
-        _ping = f"""
-<blockquote><b>❏ PONG!!🏓
-├• Ping: <code>{str(delta_ping).replace('.', ',')} ms</code>
-├• Uptime: <code>{uptime}</code>
-╰• Owners: <a href=tg://user?id={client.me.id}>{client.me.first_name} {client.me.last_name or ''}</a></b></blockquote>
-"""
-        await message.reply_text(_ping)
+        uptime = await _human_time_duration((datetime.utcnow() - START_TIME).total_seconds())
+        delta_ping = round((end - start).microseconds / 1000, 2)
+        await message.reply_text(
+            f"<blockquote><b>❏ PONG!!🏓\n"
+            f"├• Ping: <code>{delta_ping} ms</code>\n"
+            f"├• Uptime: <code>{uptime}</code>\n"
+            f"╰• Owners: <a href=tg://user?id={client.me.id}>{client.me.first_name} {client.me.last_name or ''}</a></b></blockquote>"
+        )
     except UserBannedInChannel:
         pass
-    except Exception as error:
-        await message.reply(f"Error: {error}")
 
 async def start_cmd(client, message):
-    """Logika utama untuk perintah /start."""
     await add_served_user(message.from_user.id)
-    if message.from_user.id != OWNER_ID:
-        await send_msg_to_owner(client, message)
-
-    buttons = Button.start(message)
-    welcome_text = (
-        f"👋 Halo {message.from_user.first_name}!\n\n"
-        f"Selamat datang di HiroUserbot. HiroUserbot adalah solusi otomatisasi Telegram yang andal dan mudah digunakan.\n\n"
-        f"Pilih salah satu menu di bawah ini untuk melanjutkan."
-    )
-    await message.reply(welcome_text, reply_markup=InlineKeyboardMarkup(buttons))
+    await send_msg_to_owner(client, message)
+    if len(message.command) < 2:
+        buttons = Button.start(message)
+        msg = MSG.START(message)
+        await message.reply(msg, reply_markup=InlineKeyboardMarkup(buttons))
+    else:
+        txt = message.text.split(None, 1)[1]
+        msg_id = txt.split("_", 1)[1]
+        send = await message.reply("<b>tunggu sebentar...</b>")
+        if "secretMsg" in txt:
+            try:
+                m = [obj for obj in get_objects() if id(obj) == int(msg_id)][0]
+            except Exception as error:
+                return await send.edit(f"<b>❌ error:</b> <code>{error}</code>")
+            user_or_me = [m.reply_to_message.from_user.id, m.from_user.id]
+            if message.from_user.id not in user_or_me:
+                return await send.edit(
+                    f"<b>❌ pesan ini bukan untukmu <a href=tg://user?id={message.from_user.id}>{message.from_user.first_name} {message.from_user.last_name or ''}</a>"
+                )
+            else:
+                text = await client.send_message(
+                    message.chat.id,
+                    m.text.split(None, 1)[1],
+                    protect_content=True,
+                    reply_to_message_id=message.id,
+                )
+                await send.delete()
+                await asyncio.sleep(120)
+                await message.delete()
+                await text.delete()
 
 @DANTE.UBOT("pong")
 @DANTE.DEVS("uping")
@@ -158,104 +111,5 @@ async def _(client, message):
     await ping_cmd(client, message)
 
 @DANTE.BOT("start")
-async def start_handler(client, message):
-    """Handler untuk perintah /start."""
-    print(f"[LOG] Perintah /start diterima dari {message.from_user.id}")
+async def _(client, message):
     await start_cmd(client, message)
-
-@DANTE.CALLBACK("profil")
-async def profil_callback(client, callback_query):
-    user_id = int(callback_query.data.split()[1])
-    user = await client.get_users(user_id)
-    full_name = f"{user.first_name} {user.last_name or ''}"
-    username = f"@{user.username}" if user.username else "Tidak ada username"
-    profile_text = (
-        f"👤 <b>Profil Pengguna:</b>\n"
-        f"📌 <b>Nama:</b> {full_name}\n"
-        f"🔗 <b>Username:</b> {username}\n"
-        f"🆔 <b>ID:</b> <code>{user.id}</code>"
-    )
-    await callback_query.message.edit_text(profile_text)
-
-@DANTE.CALLBACK("jawab_pesan")
-async def jawab_pesan_callback(client, callback_query):
-    user_id = int(callback_query.data.split()[1])
-    await callback_query.message.reply(f"Silakan balas pesan ini untuk mengirim pesan ke pengguna dengan ID {user_id}.")
-
-async def lihat_moduls_callback(client, callback_query):
-    SH = await ubot.get_prefix(callback_query.from_user.id)
-    top_text = f"<b>❏ Moduls\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
-    await callback_query.message.edit_text(
-        text=top_text,
-        reply_markup=InlineKeyboardMarkup(
-            paginate_modules(0, HELP_COMMANDS, "help")
-        ),
-        disable_web_page_preview=True,
-    )
-
-@DANTE.CALLBACK("hubungi_owner")
-async def hubungi_owner_callback(client, callback_query):
-    await callback_query.message.edit_text(
-        f"☎️ Jika Anda membutuhkan bantuan, silakan hubungi owner: <a href='tg://user?id={OWNER_ID}'>Klik di sini</a>.",
-        disable_web_page_preview=True,
-    )
-
-@DANTE.CALLBACK("coba_gratis")
-async def coba_gratis_callback(client, callback_query):
-    user_id = callback_query.from_user.id
-    if await is_trial_used(user_id):
-        buttons = [
-            [InlineKeyboardButton("💳 Lakukan Pembayaran 💳", callback_data="bayar_dulu")]
-        ]
-        return await callback_query.edit_message_text(
-            """<blockquote>
-<b>Anda sudah pernah mencoba gratis, silahkan beli untuk menikmati fasilitas bot.</b></blockquote>
-""",
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
-    else:
-        # Tandai pengguna sebagai sudah menggunakan trial
-        await mark_trial_used(user_id)
-        await add_prem(user_id)
-
-        now = datetime.now()
-        expired = now + timedelta(days=1)
-        await set_expired_date(user_id, expired)
-
-        buttons = [
-            [InlineKeyboardButton("⚒️ Buat HiroUserbot", callback_data="buat_ubot")]
-        ]
-        return await callback_query.edit_message_text(
-            """<blockquote>
-<b>Anda telah mendapatkan akses premium selama 1 hari. Silahkan gunakan fasilitas bot.</b></blockquote>
-""",
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
-
-@DANTE.CALLBACK("buat_ubot")
-async def buat_ubot_callback(client, callback_query):
-    buttons = [
-        [InlineKeyboardButton("💳 Lakukan Pembayaran", callback_data="bayar_dulu")],
-        [InlineKeyboardButton("Kembali", callback_data="home")]
-    ]
-    await callback_query.edit_message_text(
-        "⚒️ Silakan ikuti langkah-langkah untuk membuat UBot.",
-        reply_markup=InlineKeyboardMarkup(buttons),
-    )
-
-@DANTE.BOT("start")
-async def start_handler(client, message):
-    await start_cmd(client, message)
-
-@DANTE.CALLBACK("lihat_moduls")
-async def lihat_moduls_callback(client, callback_query):
-    """Handles the 'lihat_moduls' callback query."""
-    SH = await ubot.get_prefix(callback_query.from_user.id)
-    top_text = f"<b>❏ Moduls\n├ Prefixes: {' '.join(SH)}\n╰ Commands: {len(HELP_COMMANDS)}</b>"
-    await callback_query.message.edit_text(
-        text=top_text,
-        reply_markup=InlineKeyboardMarkup(
-            paginate_modules(0, HELP_COMMANDS, "help")
-        ),
-        disable_web_page_preview=True,
-    )
