@@ -7,6 +7,7 @@ from pytz import timezone
 
 from DanteUserbot.core.helpers import Ubot, loadModule, set_expired_date, add_ubot, get_DanteUserbots
 from DanteUserbot.core.helpers.client import DANTE, FILTERS
+from DanteUserbot.core.function.plugins import loadPlugins
 
 @DANTE.BOT("login", FILTERS.OWNER)
 @DANTE.UBOT("login")
@@ -62,10 +63,10 @@ async def login_userbot(client, message):
 
 @DANTE.BOT("restart")
 async def restart_userbot(client, message):
-    msg = await message.reply("<b>tunggu sebentar</b>", quote=True)
+    msg = await message.reply("<b>tunggu sebentar...</b>", quote=True)
     if message.from_user.id not in ubot._get_my_id:
         return await msg.edit(
-            f"<b>anda tidak bisa menggunakan perintah ini. dikarenakan anda bukan pengguna @{bot.me.username}</b>"
+            f"<b>Anda tidak bisa menggunakan perintah ini karena Anda bukan pengguna @{bot.me.username}</b>"
         )
     for X in ubot._ubot:
         if message.from_user.id == X.me.id:
@@ -76,12 +77,9 @@ async def restart_userbot(client, message):
                         ubot._get_my_id.remove(X.me.id)
                         UB = Ubot(**_ubot_)
                         await UB.start()
-                        for mod in loadModule():
-                            importlib.reload(
-                                importlib.import_module(f"DanteUserbot.modules.{mod}")
-                            )
+                        await loadPlugins()  # Memuat ulang modul dan mengirim pesan
                         return await msg.edit(
-                            f"<b>✅ restart berhasil dilakukan {UB.me.first_name} {UB.me.last_name or ''} | {UB.me.id}</b>"
+                            f"<b>✅ Restart berhasil dilakukan untuk {UB.me.first_name} {UB.me.last_name or ''} | {UB.me.id}</b>"
                         )
                     except Exception as error:
                         return await msg.edit(f"<b>{error}</b>")
