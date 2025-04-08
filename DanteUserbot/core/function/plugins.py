@@ -6,6 +6,7 @@ from DanteUserbot import bot, ubot
 from DanteUserbot.config import OWNER_ID
 from DanteUserbot.modules import loadModule
 from DanteUserbot.core.helpers.text import MSG
+from DanteUserbot.core.helpers.client import DANTE 
 
 HELP_COMMANDS = {}
 
