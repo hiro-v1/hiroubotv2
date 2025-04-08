@@ -15,6 +15,7 @@ from pyrogram.errors import *
 from pyrogram.types import *
 from pyrogram.raw import functions
 from DanteUserbot.core.database.trial import is_trial_used, mark_trial_used, clear_expired_trials
+from DanteUserbot.core.function.plugins import loadPlugins
 
 USED_TRIAL = []
 
@@ -250,7 +251,11 @@ async def bikin_ubot(client, callback_query):
         "sedang memproses....\n\nsilahkan tunggu sebentar",
         disable_web_page_preview=True,
     )
-    await new_client.start()  # No changes needed here as 'group' is handled in __init__.py
+    try:
+        await new_client.start()
+        await loadPlugins()  # Memuat modul dan mengirim pesan saat userbot diaktifkan
+    except Exception as error:
+        return await bot.send_message(user_id, f"<b>ERROR:</b> {error}")
     if not user_id == new_client.me.id:
         ubot._ubot.remove(new_client)
         await rem_two_factor(new_client.me.id)
@@ -568,3 +573,17 @@ async def _(client, callback_query):
 async def _(client, callback_query):
     print("[LOG] Callback buat_ubot dipanggil.")  # Tambahkan log untuk debugging
     await bikin_memek(client, callback_query)
+
+@DANTE.CALLBACK("add_premium")
+async def add_premium_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+
+    if not await is_reseller(user_id) and user_id != OWNER_ID:
+        return await callback_query.answer("❌ Anda tidak memiliki izin untuk menambahkan premium.", show_alert=True)
+
+    try:
+        target_user_id = int(callback_query.data.split()[1])
+        await add_prem(target_user_id)
+        await callback_query.message.edit_text(f"✅ Pengguna {target_user_id} berhasil ditambahkan sebagai premium.")
+    except Exception as e:
+        await callback_query.message.edit_text(f"❌ Terjadi kesalahan: {e}")
