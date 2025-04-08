@@ -1,6 +1,7 @@
 from .. import *
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
+from pytz import timezone
 from time import time
 from gc import get_objects
 from DanteUserbot import bot, ubot
@@ -9,7 +10,8 @@ from pyrogram.raw.functions import Ping
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from DanteUserbot.core.helpers.inline import Button
 from DanteUserbot.core.helpers.text import MSG
-from DanteUserbot.core.database.premium import add_served_user
+from DanteUserbot.core.database.premium import add_served_user, add_prem, set_expired_date
+from DanteUserbot.core.database.trial import is_trial_used, mark_trial_used
 
 START_TIME = datetime.utcnow()
 
@@ -113,3 +115,52 @@ async def _(client, message):
 @DANTE.BOT("start")
 async def _(client, message):
     await start_cmd(client, message)
+
+@DANTE.CALLBACK("coba_gratis")
+async def coba_gratis_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    print(f"[LOG] Callback 'coba_gratis' dipanggil oleh {user_id}")
+
+    # Cek apakah pengguna sudah pernah menggunakan trial
+    if await is_trial_used(user_id):
+        buttons = [
+            [InlineKeyboardButton("💳 Lakukan Pembayaran 💳", callback_data="bayar_dulu")]
+        ]
+        return await callback_query.edit_message_text(
+            """<blockquote>
+<b>Anda sudah pernah mencoba gratis, silahkan beli untuk menikmati fasilitas bot.</b></blockquote>
+""",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+    else:
+        # Tandai pengguna sebagai sudah menggunakan trial
+        await mark_trial_used(user_id)
+        await add_prem(user_id)
+
+        now = datetime.now(timezone("Asia/Jakarta"))
+        expired = now + timedelta(days=1)
+        await set_expired_date(user_id, expired)
+
+        buttons = [
+            [InlineKeyboardButton("⚒️ Buat HiroUserbot", callback_data="buat_ubot")]
+        ]
+        return await callback_query.edit_message_text(
+            """<blockquote>
+<b>Anda telah mendapatkan akses premium selama 1 hari. Silahkan gunakan fasilitas bot.</b></blockquote>
+""",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+
+@DANTE.CALLBACK("cek_id")
+async def cek_id_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    user = await client.get_users(user_id)
+    full_name = f"{user.first_name} {user.last_name or ''}".strip()
+    username = f"@{user.username}" if user.username else "Tidak ada username"
+    msg = (
+        f"🆔 <b>Informasi ID Anda:</b>\n"
+        f"📌 <b>Nama:</b> {full_name}\n"
+        f"🔗 <b>Username:</b> {username}\n"
+        f"🆔 <b>ID:</b> <code>{user_id}</code>"
+    )
+    await callback_query.message.edit_text(msg, disable_web_page_preview=True)
