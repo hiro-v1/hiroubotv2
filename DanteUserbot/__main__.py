@@ -68,10 +68,15 @@ async def main():
     tasks = []
     for _ubot in await get_DanteUserbots():
         user_id = int(_ubot["name"])
+        print(f"[LOG] Menjalankan userbot {user_id}")
         tasks.append(asyncio.create_task(start_ubot(user_id, _ubot)))
 
     if tasks:
         await asyncio.gather(*tasks)
+    else:
+        print("[WARNING] Tidak ada userbot yang ditemukan untuk dijalankan.")
+
+    print("[LOG] Bot dan userbot siap digunakan.")
     await idle()
 
 if __name__ == "__main__":
